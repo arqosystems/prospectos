@@ -1,0 +1,1319 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Arqos CRM</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #0f0f0f;
+  --surface: #181818;
+  --surface2: #222222;
+  --border: #2a2a2a;
+  --border2: #333;
+  --text: #f0f0f0;
+  --text2: #888;
+  --text3: #555;
+  --accent: #00e5a0;
+  --accent2: #00b87d;
+  --warn: #f59e0b;
+  --danger: #ef4444;
+  --info: #3b82f6;
+  --whatsapp: #25d366;
+  --radius: 10px;
+  --radius-sm: 6px;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; font-size: 14px; }
+
+/* Layout */
+.app { display: grid; grid-template-columns: 240px 1fr; grid-template-rows: 56px 1fr; height: 100vh; overflow: hidden; }
+.topbar { grid-column: 1/-1; background: var(--surface); border-bottom: 1px solid var(--border); display: flex; align-items: center; padding: 0 20px; gap: 16px; }
+.topbar-logo { font-size: 15px; font-weight: 600; letter-spacing: 0.05em; color: var(--accent); }
+.topbar-sep { width: 1px; height: 20px; background: var(--border); }
+.topbar-title { font-size: 13px; color: var(--text2); }
+.topbar-right { margin-left: auto; display: flex; align-items: center; gap: 10px; }
+.sync-btn { padding: 6px 14px; background: transparent; border: 1px solid var(--border2); border-radius: var(--radius-sm); color: var(--text2); font-size: 12px; font-family: 'DM Sans', sans-serif; cursor: pointer; transition: all 0.15s; }
+.sync-btn:hover { border-color: var(--accent2); color: var(--accent); }
+.daily-badge { background: var(--surface2); border: 1px solid var(--border); border-radius: 20px; padding: 4px 12px; font-size: 12px; color: var(--text2); display: flex; align-items: center; gap: 6px; }
+.daily-badge span { color: var(--accent); font-weight: 600; font-family: 'DM Mono', monospace; }
+
+/* Sidebar */
+.sidebar { background: var(--surface); border-right: 1px solid var(--border); display: flex; flex-direction: column; overflow-y: auto; overflow-x: hidden; }
+.sidebar-section { padding: 16px 12px 8px; font-size: 10px; font-weight: 600; letter-spacing: 0.1em; color: var(--text3); text-transform: uppercase; flex-shrink: 0; }
+.sidebar-item { display: flex; align-items: center; gap: 10px; padding: 8px 12px; border-radius: var(--radius-sm); margin: 1px 8px; cursor: pointer; color: var(--text2); font-size: 13px; transition: all 0.15s; }
+.sidebar-item:hover { background: var(--surface2); color: var(--text); }
+.sidebar-item.active { background: rgba(0,229,160,0.08); color: var(--accent); }
+.sidebar-item .count { margin-left: auto; background: var(--surface2); border-radius: 10px; padding: 1px 7px; font-size: 11px; font-family: 'DM Mono', monospace; }
+.sidebar-bottom { margin-top: auto; padding: 12px; }
+.upload-btn { width: 100%; padding: 10px; background: rgba(0,229,160,0.08); border: 1px dashed var(--accent2); border-radius: var(--radius); color: var(--accent); font-size: 13px; font-family: 'DM Sans', sans-serif; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; transition: all 0.15s; }
+.upload-btn:hover { background: rgba(0,229,160,0.15); }
+
+/* Main */
+.main { overflow: hidden; display: flex; flex-direction: column; }
+.toolbar { padding: 12px 20px; display: flex; align-items: center; gap: 10px; border-bottom: 1px solid var(--border); flex-shrink: 0; }
+.search { flex: 1; background: var(--surface2); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 7px 12px; color: var(--text); font-family: 'DM Sans', sans-serif; font-size: 13px; outline: none; }
+.search:focus { border-color: var(--accent2); }
+.filter-btn { padding: 7px 12px; background: var(--surface2); border: 1px solid var(--border); border-radius: var(--radius-sm); color: var(--text2); font-size: 13px; font-family: 'DM Sans', sans-serif; cursor: pointer; white-space: nowrap; }
+.filter-btn.active { border-color: var(--accent2); color: var(--accent); background: rgba(0,229,160,0.06); }
+
+/* Daily panel */
+.daily-panel { background: var(--surface); border-bottom: 1px solid var(--border); padding: 12px 20px; display: flex; gap: 12px; flex-shrink: 0; }
+.daily-col { flex: 1; background: var(--surface2); border: 1px solid var(--border); border-radius: var(--radius); padding: 12px 14px; }
+.daily-col-title { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.08em; color: var(--text3); margin-bottom: 8px; display: flex; align-items: center; justify-content: space-between; }
+.daily-col-title span { font-family: 'DM Mono', monospace; color: var(--accent); font-size: 13px; font-weight: 500; letter-spacing: 0; text-transform: none; }
+.daily-mini { font-size: 12px; color: var(--text2); padding: 4px 0; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; }
+.daily-mini:last-child { border-bottom: none; }
+.daily-mini-name { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 160px; }
+
+/* Table */
+.table-wrap { flex: 1; overflow-y: auto; }
+table { width: 100%; border-collapse: collapse; }
+thead th { position: sticky; top: 0; background: var(--surface); padding: 10px 14px; text-align: left; font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.07em; color: var(--text3); border-bottom: 1px solid var(--border); white-space: nowrap; }
+tbody tr { border-bottom: 1px solid var(--border); cursor: pointer; transition: background 0.1s; }
+tbody tr:hover { background: var(--surface2); }
+td { padding: 10px 14px; vertical-align: middle; }
+.contact-name { font-weight: 500; font-size: 13px; }
+.contact-sub { font-size: 11px; color: var(--text2); margin-top: 2px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 200px; }
+.tag { display: inline-block; padding: 2px 8px; border-radius: 10px; font-size: 11px; font-weight: 500; }
+.tag-condominio { background: rgba(59,130,246,0.15); color: #60a5fa; }
+.tag-edificio { background: rgba(168,85,247,0.15); color: #c084fc; }
+.tag-fraccionamiento { background: rgba(245,158,11,0.15); color: #fbbf24; }
+.tag-otro { background: rgba(100,116,139,0.15); color: #94a3b8; }
+.status-dot { width: 8px; height: 8px; border-radius: 50%; display: inline-block; margin-right: 6px; }
+.s-nuevo { background: var(--accent); }
+.s-contactado { background: var(--info); }
+.s-visto { background: var(--warn); }
+.s-respondio { background: #22c55e; }
+.s-frio { background: var(--danger); }
+.days-badge { font-family: 'DM Mono', monospace; font-size: 12px; }
+.days-ok { color: var(--accent); }
+.days-warn { color: var(--warn); }
+.days-danger { color: var(--danger); }
+.action-btn { padding: 5px 10px; border-radius: var(--radius-sm); font-size: 12px; font-family: 'DM Sans', sans-serif; cursor: pointer; border: 1px solid var(--border); background: transparent; color: var(--text2); transition: all 0.15s; white-space: nowrap; }
+.action-btn:hover { border-color: var(--text2); color: var(--text); }
+.wa-btn { border-color: rgba(37,211,102,0.3); color: var(--whatsapp); }
+.wa-btn:hover { background: rgba(37,211,102,0.08); border-color: var(--whatsapp); }
+.ai-btn { border-color: rgba(0,229,160,0.3); color: var(--accent); }
+.ai-btn:hover { background: rgba(0,229,160,0.08); border-color: var(--accent); }
+
+/* Modal */
+.overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.7); z-index: 100; display: none; align-items: center; justify-content: center; backdrop-filter: blur(4px); }
+.overlay.show { display: flex; }
+.modal { background: var(--surface); border: 1px solid var(--border2); border-radius: 14px; width: 580px; max-height: 90vh; overflow-y: auto; }
+.modal-header { padding: 20px 24px 16px; border-bottom: 1px solid var(--border); display: flex; align-items: flex-start; justify-content: space-between; }
+.modal-name { font-size: 18px; font-weight: 600; }
+.modal-sub { font-size: 13px; color: var(--text2); margin-top: 3px; }
+.modal-close { background: none; border: none; color: var(--text3); cursor: pointer; font-size: 20px; line-height: 1; padding: 2px; }
+.modal-body { padding: 20px 24px; }
+.modal-section { margin-bottom: 20px; }
+.modal-label { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.08em; color: var(--text3); margin-bottom: 8px; }
+.status-grid { display: flex; gap: 6px; flex-wrap: wrap; }
+.status-btn { padding: 6px 14px; border-radius: 20px; font-size: 12px; font-family: 'DM Sans', sans-serif; cursor: pointer; border: 1px solid var(--border); background: var(--surface2); color: var(--text2); transition: all 0.15s; }
+.status-btn.active-nuevo { border-color: var(--accent); color: var(--accent); background: rgba(0,229,160,0.08); }
+.status-btn.active-contactado { border-color: var(--info); color: #60a5fa; background: rgba(59,130,246,0.08); }
+.status-btn.active-visto { border-color: var(--warn); color: var(--warn); background: rgba(245,158,11,0.08); }
+.status-btn.active-respondio { border-color: #22c55e; color: #22c55e; background: rgba(34,197,94,0.08); }
+.status-btn.active-frio { border-color: var(--danger); color: var(--danger); background: rgba(239,68,68,0.08); }
+.msg-input { width: 100%; background: var(--surface2); border: 1px solid var(--border); border-radius: var(--radius); padding: 10px 12px; color: var(--text); font-family: 'DM Sans', sans-serif; font-size: 13px; resize: vertical; min-height: 80px; outline: none; line-height: 1.5; }
+.msg-input:focus { border-color: var(--accent2); }
+.generate-btn { width: 100%; padding: 10px; background: rgba(0,229,160,0.08); border: 1px solid var(--accent2); border-radius: var(--radius); color: var(--accent); font-size: 13px; font-weight: 500; font-family: 'DM Sans', sans-serif; cursor: pointer; margin-top: 8px; transition: all 0.15s; }
+.generate-btn:hover { background: rgba(0,229,160,0.15); }
+.generate-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+.ai-response { background: var(--surface2); border: 1px solid var(--border2); border-radius: var(--radius); padding: 14px; margin-top: 10px; font-size: 13px; line-height: 1.6; color: var(--text); white-space: pre-wrap; display: none; }
+.ai-label { font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.1em; color: var(--accent); margin-bottom: 6px; }
+.copy-response { margin-top: 8px; padding: 7px 14px; background: transparent; border: 1px solid var(--border); border-radius: var(--radius-sm); color: var(--text2); font-size: 12px; font-family: 'DM Sans', sans-serif; cursor: pointer; }
+.copy-response:hover { border-color: var(--text2); color: var(--text); }
+.next-contact { background: var(--surface2); border: 1px solid var(--border); border-radius: var(--radius); padding: 12px 14px; display: flex; align-items: center; gap: 10px; }
+.next-icon { font-size: 20px; }
+.next-text { font-size: 13px; color: var(--text); }
+.next-sub { font-size: 12px; color: var(--text2); margin-top: 2px; }
+.modal-actions { display: flex; gap: 8px; margin-top: 16px; }
+.btn-primary { flex: 1; padding: 10px; background: var(--accent); color: #000; border: none; border-radius: var(--radius); font-size: 13px; font-weight: 600; font-family: 'DM Sans', sans-serif; cursor: pointer; }
+.btn-delete { padding: 10px 14px; background: transparent; border: 1px solid rgba(239,68,68,0.4); color: #ef4444; border-radius: var(--radius); font-size: 13px; font-weight: 500; font-family: 'DM Sans', sans-serif; cursor: pointer; }
+.btn-delete:hover { background: rgba(239,68,68,0.08); border-color: var(--danger); }
+.btn-wa { flex: 1; padding: 10px; background: rgba(37,211,102,0.1); border: 1px solid rgba(37,211,102,0.3); color: var(--whatsapp); border-radius: var(--radius); font-size: 13px; font-weight: 500; font-family: 'DM Sans', sans-serif; cursor: pointer; }
+
+/* Empty state */
+.empty { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; color: var(--text3); gap: 12px; padding: 40px; text-align: center; }
+.empty-icon { font-size: 48px; opacity: 0.3; }
+.empty-title { font-size: 16px; font-weight: 500; color: var(--text2); }
+.empty-sub { font-size: 13px; max-width: 300px; line-height: 1.5; }
+
+/* Scrollbar */
+::-webkit-scrollbar { width: 4px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 2px; }
+
+/* Loading spinner */
+.spinner { display: inline-block; width: 14px; height: 14px; border: 2px solid rgba(0,229,160,0.2); border-top-color: var(--accent); border-radius: 50%; animation: spin 0.7s linear infinite; }
+@keyframes spin { to { transform: rotate(360deg); } }
+
+.info-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.info-item { background: var(--surface2); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 10px 12px; }
+.info-item-label { font-size: 10px; color: var(--text3); text-transform: uppercase; letter-spacing: 0.07em; margin-bottom: 4px; }
+.info-item-val { font-size: 13px; font-weight: 500; }
+
+/* ===================== MOBILE RESPONSIVE ===================== */
+@media (max-width: 768px) {
+  /* Layout mobile — single column */
+  .app { grid-template-columns: 1fr; grid-template-rows: 52px auto 1fr; height: 100vh; }
+
+  /* Topbar mobile */
+  .topbar { padding: 0 12px; gap: 8px; }
+  .topbar-title { display: none; }
+  .topbar-sep { display: none; }
+  .daily-badge { padding: 3px 8px; font-size: 11px; }
+  #badge-follow { display: none; }
+  .sync-btn { padding: 4px 10px; font-size: 11px; }
+
+  /* Hide sidebar on mobile — replaced by bottom nav */
+  .sidebar { display: none; }
+
+  /* Main area */
+  .main { grid-column: 1; overflow: hidden; display: flex; flex-direction: column; }
+
+  /* Daily panel compact */
+  .daily-panel { padding: 8px 12px; }
+
+  /* Toolbar mobile */
+  .toolbar { padding: 8px 12px; gap: 6px; flex-wrap: wrap; }
+  .search { font-size: 14px; padding: 9px 12px; }
+  .filter-btn { font-size: 12px; padding: 6px 10px; }
+  #exportBtn, #bulkDeleteBtn, #selectAllBtn { font-size: 12px; padding: 6px 10px; }
+
+  /* Pagination mobile */
+  #paginationTop { padding: 6px 12px; }
+  #pageInfo { font-size: 11px; }
+
+  /* Table mobile — card layout */
+  table { display: none; }
+  #mobileList { display: block; }
+
+  /* Bottom navigation */
+  .mobile-nav { display: flex; }
+
+  /* Mobile validation mode */
+  .mobile-val-card { display: flex; }
+}
+
+@media (min-width: 769px) {
+  #mobileList { display: none; }
+  .mobile-nav { display: none; }
+  .mobile-val-card { display: none; }
+}
+
+/* Mobile card list */
+#mobileList {
+  flex: 1;
+  overflow-y: auto;
+  padding: 8px 12px;
+  display: none;
+  flex-direction: column;
+  gap: 8px;
+  padding-bottom: 100px;
+}
+
+.m-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 12px 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  position: relative;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.m-card-top {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+}
+
+.m-card-check {
+  width: 20px;
+  height: 20px;
+  margin-top: 2px;
+  flex-shrink: 0;
+  accent-color: var(--accent);
+  cursor: pointer;
+}
+
+.m-card-num {
+  font-size: 10px;
+  color: var(--text3);
+  font-family: 'DM Mono', monospace;
+  margin-top: 4px;
+  flex-shrink: 0;
+  width: 20px;
+}
+
+.m-card-info { flex: 1; min-width: 0; }
+
+.m-card-name {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text);
+  line-height: 1.3;
+  margin-bottom: 2px;
+}
+
+.m-card-sub {
+  font-size: 11px;
+  color: var(--text2);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.m-card-meta {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.m-tag {
+  font-size: 10px;
+  padding: 2px 7px;
+  border-radius: 8px;
+  background: var(--surface2);
+  color: var(--text2);
+  border: 1px solid var(--border);
+}
+
+.m-tel {
+  font-family: 'DM Mono', monospace;
+  font-size: 12px;
+  color: var(--text2);
+}
+
+.m-card-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.m-btn {
+  flex: 1;
+  padding: 10px 6px;
+  border-radius: var(--radius-sm);
+  font-size: 13px;
+  font-family: 'DM Sans', sans-serif;
+  border: 1px solid var(--border);
+  background: var(--surface2);
+  color: var(--text2);
+  cursor: pointer;
+  text-align: center;
+  -webkit-tap-highlight-color: transparent;
+  min-height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+}
+
+.m-btn-wa { border-color: rgba(37,211,102,0.4); color: var(--whatsapp); background: rgba(37,211,102,0.06); }
+.m-btn-val { border-color: rgba(0,229,160,0.4); color: var(--accent); background: rgba(0,229,160,0.06); }
+.m-btn-val.validated { background: rgba(0,229,160,0.15); border-color: var(--accent); font-weight: 600; }
+.m-btn-del { border-color: rgba(239,68,68,0.3); color: var(--danger); background: rgba(239,68,68,0.04); max-width: 50px; }
+
+/* Bottom nav */
+.mobile-nav {
+  display: none;
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: var(--surface);
+  border-top: 1px solid var(--border);
+  z-index: 9999;
+  padding: 8px 4px;
+  padding-bottom: max(12px, env(safe-area-inset-bottom));
+  gap: 0;
+  box-shadow: 0 -4px 20px rgba(0,0,0,0.5);
+}
+
+.mobile-nav-btn {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+  padding: 4px 2px;
+  background: none;
+  border: none;
+  color: var(--text3);
+  font-size: 10px;
+  font-family: 'DM Sans', sans-serif;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  border-radius: 8px;
+}
+
+.mobile-nav-btn.active { color: var(--accent); }
+.mobile-nav-btn span { font-size: 20px; line-height: 1; }
+
+/* Mobile search bar */
+.m-search-bar {
+  display: none;
+  padding: 8px 12px;
+  border-bottom: 1px solid var(--border);
+  background: var(--surface);
+}
+@media (max-width: 768px) {
+  .m-search-bar { display: block; }
+  .toolbar { display: none; }
+  .daily-panel { display: none; }
+}
+.m-search-input {
+  width: 100%;
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  padding: 9px 16px;
+  color: var(--text);
+  font-family: 'DM Sans', sans-serif;
+  font-size: 14px;
+  outline: none;
+}
+.m-search-input:focus { border-color: var(--accent2); }
+
+/* Mobile topbar badge counts */
+.m-counts {
+  display: flex;
+  gap: 6px;
+  margin-left: auto;
+}
+
+</style>
+</head>
+<body>
+<!-- Login Screen -->
+<div id="loginScreen" style="position:fixed;inset:0;background:#0f0f0f;z-index:99999;display:flex;align-items:center;justify-content:center;">
+  <div style="background:#181818;border:1px solid #2a2a2a;border-radius:16px;padding:40px 36px;width:360px;text-align:center;">
+    <div style="font-size:22px;font-weight:700;color:#00e5a0;letter-spacing:0.05em;margin-bottom:4px">ARQOS</div>
+    <div style="font-size:13px;color:#888;margin-bottom:32px">CRM de Prospectos</div>
+    <input type="text" id="loginUser" placeholder="Usuario" autocomplete="off" autocorrect="off" autocapitalize="off" style="width:100%;background:#222;border:1px solid #333;border-radius:8px;padding:11px 14px;color:#f0f0f0;font-size:14px;font-family:inherit;outline:none;margin-bottom:12px">
+    <input type="password" id="loginPass" placeholder="Contraseña" autocomplete="new-password" onkeydown="if(event.key==='Enter')doLogin()" style="width:100%;background:#222;border:1px solid #333;border-radius:8px;padding:11px 14px;color:#f0f0f0;font-size:14px;font-family:inherit;outline:none;margin-bottom:8px">
+    <div id="loginError" style="font-size:12px;color:#ef4444;min-height:18px;margin-bottom:12px"></div>
+    <button onclick="doLogin()" style="width:100%;padding:12px;background:#00e5a0;color:#000;border:none;border-radius:8px;font-size:14px;font-weight:700;font-family:inherit;cursor:pointer">Entrar</button>
+  </div>
+</div>
+
+<div class="app" id="mainApp" style="display:none">
+  <!-- Topbar -->
+  <div class="topbar">
+    <div class="topbar-logo">ARQOS</div>
+    <div class="topbar-sep"></div>
+    <div class="topbar-title">CRM de Prospectos</div>
+    <div class="topbar-right">
+      <button class="sync-btn" id="syncBtn" onclick="syncGitHub()">↑ Sincronizar</button>
+      <button class="sync-btn" onclick="openConfig()" id="configTopBtn" title="Configurar GitHub">⚙️</button>
+      <div class="daily-badge" id="badge-follow">Seguimientos <span id="followCount">0</span>/10</div>
+      <div class="daily-badge">Total: <span id="totalCount">0</span></div>
+    </div>
+  </div>
+
+  <!-- Sidebar -->
+  <div class="sidebar">
+    <div class="sidebar-section">Vistas</div>
+    <div class="sidebar-item active" onclick="setView('todos')" id="view-todos">
+      <span>📋</span> Todos <span class="count" id="cnt-todos">0</span>
+    </div>
+    <div class="sidebar-item" onclick="setView('hoy')" id="view-hoy">
+      <span>🎯</span> Contactar hoy <span class="count" id="cnt-hoy">0</span>
+    </div>
+    <div class="sidebar-item" onclick="setView('nuevos')" id="view-nuevos">
+      <span>✨</span> Nuevos <span class="count" id="cnt-nuevos">0</span>
+    </div>
+    <div class="sidebar-item" onclick="setView('visto')" id="view-visto">
+      <span>👁</span> Me dejó en visto <span class="count" id="cnt-visto">0</span>
+    </div>
+    <div class="sidebar-item" onclick="setView('frio')" id="view-frio">
+      <span>❄️</span> Frío <span class="count" id="cnt-frio">0</span>
+    </div>
+    <div class="sidebar-item" onclick="setView('respondio')" id="view-respondio">
+      <span>💬</span> Respondieron <span class="count" id="cnt-respondio">0</span>
+    </div>
+
+    <div class="sidebar-item" onclick="setView('validados')" id="view-validados"><span>✅</span> Validados WA <span class="count" id="cnt-validados">0</span></div>
+    <div class="sidebar-item" onclick="setView('novalidados')" id="view-novalidados"><span>❓</span> No validados <span class="count" id="cnt-novalidados">0</span></div>
+    <div class="sidebar-item" onclick="setView('eliminados')" id="view-eliminados"><span>🗑</span> Eliminados <span class="count" id="cnt-eliminados">0</span></div>
+    <div class="sidebar-section">Sectores</div>
+    <div id="sectorList"></div>
+
+    <div class="sidebar-bottom">
+      <input type="file" id="csvInput" accept=".csv" style="display:none" multiple onchange="loadCSV(this)">
+      <button class="upload-btn" onclick="document.getElementById('csvInput').click()">
+        ＋ Cargar CSV
+      </button>
+    </div>
+  </div>
+
+  <!-- Main -->
+  <div class="main">
+    <!-- Daily panel -->
+    <div class="daily-panel">
+      <div class="daily-col" style="flex:2">
+        <div class="daily-col-title">📲 Mensajes del día — seguimientos activos <span id="dp-seguimientos-count">0/10</span></div>
+        <div id="dp-seguimientos"></div>
+      </div>
+    </div>
+
+    <!-- Toolbar -->
+    <div class="toolbar">
+      <input class="search" placeholder="Buscar nombre, teléfono, colonia..." oninput="renderTable()" id="searchInput">
+      <button class="filter-btn" onclick="toggleSort('nombre')">Nombre ↕</button>
+      <button class="filter-btn" onclick="toggleSort('dias')">Días sin contacto ↕</button>
+      <button class="filter-btn active" onclick="toggleSort('proximoContacto')">Próximo contacto ↕</button>
+      <button class="filter-btn" id="exportBtn" onclick="exportarValidados()" style="display:none;border-color:rgba(0,229,160,0.5);color:var(--accent);font-weight:600">⬇ Exportar CSV</button>
+      <button class="filter-btn" id="bulkDeleteBtn" onclick="bulkDelete()" style="display:none;border-color:rgba(239,68,68,0.5);color:var(--danger)">🗑 Eliminar seleccionados</button>
+      <button class="filter-btn" id="selectAllBtn" onclick="selectAll()" style="display:none">☑ Seleccionar todos</button>
+    </div>
+
+    <!-- Mobile search bar -->
+    <div class="m-search-bar">
+      <input class="m-search-input" type="search" placeholder="🔍 Buscar nombre, teléfono..." oninput="document.getElementById('searchInput').value=this.value;renderTable();renderMobileList()" id="mSearchInput">
+    </div>
+
+    <!-- Mobile card list -->
+    <div id="mobileList"></div>
+
+    <!-- Table -->
+    <div class="table-wrap">
+      <div id="paginationTop" style="display:none;padding:8px 20px;display:flex;align-items:center;gap:8px;border-bottom:1px solid var(--border);flex-shrink:0">
+        <span style="font-size:12px;color:var(--text2)" id="pageInfo"></span>
+        <div style="margin-left:auto;display:flex;gap:6px">
+          <button class="filter-btn" id="prevBtn" onclick="changePage(-1)">← Anterior</button>
+          <button class="filter-btn" id="nextBtn" onclick="changePage(1)">Siguiente →</button>
+        </div>
+      </div>
+      <div id="emptyState" class="empty" style="display:none">
+        <div class="empty-icon">📂</div>
+        <div class="empty-title">No hay prospectos cargados</div>
+        <div class="empty-sub">Carga tu CSV con el botón "Cargar CSV" en el panel izquierdo. Solo se importan contactos con teléfono.</div>
+      </div>
+      <table id="mainTable" style="display:none">
+        <thead>
+          <tr>
+            <th style="width:32px"><input type="checkbox" id="masterCheck" onchange="toggleMaster(this)" style="cursor:pointer"></th>
+            <th>#</th>
+            <th>Nombre</th>
+            <th>Categoría</th>
+            <th>Teléfono</th>
+            <th>Zona</th>
+            <th>Estado</th>
+            <th>Último contacto</th>
+            <th>Próximo</th>
+            <th>Días visto</th>
+            <th>Acciones</th>
+          </tr>
+        </thead>
+        <tbody id="tableBody"></tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- Modal -->
+<div class="overlay" id="overlay" onclick="closeModal(event)">
+  <div class="modal" onclick="e => e.stopPropagation()">
+    <div class="modal-header">
+      <div>
+        <div class="modal-name" id="m-name"></div>
+        <div class="modal-sub" id="m-sub"></div>
+      </div>
+      <button class="modal-close" onclick="closeModalDirect()">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="modal-section">
+        <div class="info-grid">
+          <div class="info-item"><div class="info-item-label">Teléfono</div><div class="info-item-val" id="m-tel">—</div></div>
+          <div class="info-item"><div class="info-item-label">Zona</div><div class="info-item-val" id="m-zona">—</div></div>
+          <div class="info-item"><div class="info-item-label">Último contacto</div><div class="info-item-val" id="m-ultimo">—</div></div>
+          <div class="info-item"><div class="info-item-label">Días sin respuesta</div><div class="info-item-val" id="m-dias">—</div></div>
+        </div>
+      </div>
+
+      <div class="modal-section">
+        <div class="modal-label">Estado del prospecto</div>
+        <div class="status-grid">
+          <button class="status-btn" onclick="setStatus('nuevo')" id="sb-nuevo">✨ Nuevo</button>
+          <button class="status-btn" onclick="setStatus('contactado')" id="sb-contactado">📤 Contactado</button>
+          <button class="status-btn" onclick="setStatus('visto')" id="sb-visto">👁 Me dejó en visto</button>
+          <button class="status-btn" onclick="setStatus('respondio')" id="sb-respondio">💬 Respondió</button>
+          <button class="status-btn" onclick="setStatus('frio')" id="sb-frio">❄️ Frío</button>
+        </div>
+      </div>
+
+      <div class="modal-section">
+        <div class="modal-label">Próximo contacto recomendado</div>
+        <div class="next-contact" id="m-next">
+          <div class="next-icon">📅</div>
+          <div><div class="next-text" id="m-next-text">—</div><div class="next-sub" id="m-next-sub"></div></div>
+        </div>
+      </div>
+
+      <div class="modal-section">
+        <div class="modal-label">Pega aquí el último mensaje que te respondió</div>
+        <textarea class="msg-input" id="lastMsg" placeholder="Ej: Sí me interesa, ¿cuánto cuesta? / No gracias / ¿Puede venir la próxima semana? / (vacío si no ha respondido)"></textarea>
+        <button class="generate-btn" onclick="generateCopy()" id="generateBtn">✦ Generar mensaje con IA</button>
+        <div class="ai-response" id="aiResponse">
+          <div class="ai-label">✦ Mensaje sugerido por IA</div>
+          <div id="aiText"></div>
+          <button class="copy-response" onclick="copyAI()">Copiar mensaje</button>
+        </div>
+      </div>
+
+      <div class="modal-actions">
+        <button class="btn-delete" onclick="deleteContact()">🗑 Eliminar</button>
+        <button class="btn-wa" onclick="openWhatsApp()">💬 Abrir WhatsApp</button>
+        <button class="btn-primary" onclick="saveContact()">Guardar cambios</button>
+      </div>
+    </div>
+  </div>
+  <!-- Bottom Mobile Nav -->
+  <nav class="mobile-nav" id="mobileNav">
+    <button class="mobile-nav-btn active" id="mnav-todos" onclick="mobileNav('todos')"><span>📋</span>Todos</button>
+    <button class="mobile-nav-btn" id="mnav-novalidados" onclick="mobileNav('novalidados')"><span>❓</span>Pendientes</button>
+    <button class="mobile-nav-btn" id="mnav-validados" onclick="mobileNav('validados')"><span>✅</span>Validados</button>
+    <button class="mobile-nav-btn" id="mnav-eliminados" onclick="mobileNav('eliminados')"><span>🗑</span>Eliminados</button>
+    <button class="mobile-nav-btn" id="mnav-sync" onclick="syncGitHub()"><span>☁️</span>Guardar</button>
+    <button class="mobile-nav-btn" onclick="openConfig()"><span>⚙️</span>Config</button>
+  </nav>
+</div><!-- end mainApp -->
+
+<script>
+// Login
+const VALID_USER = 'arqosystems';
+const VALID_HASH = '8956250455f5a37d9d31ef9806b5426ffcdf5b219ba5061cdbf057dd0aa0f510';
+
+async function hashStr(str) {
+  const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(str));
+  return Array.from(new Uint8Array(buf)).map(b=>b.toString(16).padStart(2,'0')).join('');
+}
+
+async function doLogin() {
+  const user = document.getElementById('loginUser').value.trim();
+  const pass = document.getElementById('loginPass').value;
+  const hash = await hashStr(pass);
+  if (user === VALID_USER && hash === VALID_HASH) {
+    sessionStorage.setItem('crm_auth','1');
+    document.getElementById('loginScreen').style.display='none';
+    document.getElementById('mainApp').style.display='grid';
+  } else {
+    document.getElementById('loginError').textContent='Usuario o contraseña incorrectos';
+    document.getElementById('loginPass').value='';
+  }
+}
+
+// Check session
+if (sessionStorage.getItem('crm_auth') === '1') {
+  document.getElementById('loginScreen').style.display='none';
+  document.getElementById('mainApp').style.display='grid';
+}
+</script>
+
+<script>
+let contacts = JSON.parse(localStorage.getItem('arqos_crm') || '[]');
+let currentView = 'todos';
+let ghSha = null;
+
+// GitHub Storage
+function getConfig(){return{token:localStorage.getItem('gh_token')||'',user:localStorage.getItem('gh_user')||'arqosystems',repo:localStorage.getItem('gh_repo')||'prospectos'};}
+
+function setSyncStatus(s,msg){
+  const btn=document.getElementById('syncBtn');
+  if(!btn)return;
+  btn.className='sync-btn';
+  if(s==='loading'){btn.textContent='⟳ Guardando...';btn.disabled=true;}
+  else if(s==='ok'){btn.textContent=msg||'↑ Sincronizar';btn.style.color='var(--accent)';btn.disabled=false;}
+  else if(s==='err'){btn.textContent=msg||'✗ Error';btn.style.color='var(--danger)';btn.disabled=false;}
+  else{btn.textContent='↑ Sincronizar';btn.disabled=false;}
+}
+
+async function loadFromGitHub(){
+  const c=getConfig();if(!c.token)return;
+  try{
+    const r=await fetch(`https://api.github.com/repos/${c.user}/${c.repo}/contents/datos.json`,{headers:{'Authorization':`token ${c.token}`,'Accept':'application/vnd.github.v3+json'}});
+    if(r.status===404){setSyncStatus('ok','Sin datos aún');return;}
+    if(!r.ok)return;
+    const data=await r.json();
+    ghSha=data.sha;
+    const remoto=JSON.parse(atob(data.content.replace(/\n/g,'')));
+    const local=contacts;
+    // Si local tiene más validados, NO pisar — solo agregar nuevos del remoto
+    const localValidados=local.filter(c=>c.waValidado).length;
+    const remotoValidados=remoto.filter(c=>c.waValidado).length;
+    if(localValidados >= remotoValidados && local.length > 0){
+      // Local gana — solo agregar contactos nuevos del remoto que no existen
+      const localTels=new Set(local.map(c=>c.tel));
+      remoto.forEach(c=>{ if(!localTels.has(c.tel)) contacts.push(c); });
+    } else {
+      // Remoto gana — pero preservar validaciones locales
+      const localMap=new Map(local.map(c=>[c.tel,c]));
+      contacts=remoto.map(c=>{
+        const loc=localMap.get(c.tel);
+        if(loc && loc.waValidado && !c.waValidado) return {...c, waValidado:true};
+        return c;
+      });
+      // Agregar contactos locales que no están en remoto
+      const remoteTels=new Set(remoto.map(c=>c.tel));
+      local.forEach(c=>{ if(!remoteTels.has(c.tel)) contacts.push(c); });
+    }
+    save();updateAll();
+    setSyncStatus('ok','↑ Sincronizar');
+  }catch(e){console.error('GitHub load error:',e);}
+}
+
+async function syncGitHub(){
+  const c=getConfig();
+  if(!c.token){openConfig();return;}
+  setSyncStatus('loading');
+  try{
+    const content=btoa(unescape(encodeURIComponent(JSON.stringify(contacts,null,2))));
+    const body={message:'CRM actualizado '+new Date().toLocaleString('es-MX'),content};
+    if(ghSha)body.sha=ghSha;
+    const r=await fetch(`https://api.github.com/repos/${c.user}/${c.repo}/contents/datos.json`,{method:'PUT',headers:{'Authorization':`token ${c.token}`,'Accept':'application/vnd.github.v3+json','Content-Type':'application/json'},body:JSON.stringify(body)});
+    if(!r.ok)throw new Error('Error '+r.status);
+    const data=await r.json();
+    ghSha=data.content.sha;
+    // Guardar backup con fecha
+    const fecha=new Date().toISOString().slice(0,10);
+    const backupKey=`backup-${fecha}`;
+    const backupExist=await fetch(`https://api.github.com/repos/${c.user}/${c.repo}/contents/backups/${backupKey}.json`,{headers:{'Authorization':`token ${c.token}`,'Accept':'application/vnd.github.v3+json'}});
+    const backupBody={message:`Backup ${fecha}`,content};
+    if(backupExist.ok){const bd=await backupExist.json();backupBody.sha=bd.sha;}
+    fetch(`https://api.github.com/repos/${c.user}/${c.repo}/contents/backups/${backupKey}.json`,{method:'PUT',headers:{'Authorization':`token ${c.token}`,'Accept':'application/vnd.github.v3+json','Content-Type':'application/json'},body:JSON.stringify(backupBody)});
+    // Guardar timestamp
+    const ahora=new Date().toLocaleString('es-MX');
+    localStorage.setItem('last_sync',ahora);
+    setSyncStatus('ok',`✓ Guardado ${ahora}`);
+    setTimeout(()=>setSyncStatus('ok','↑ Sincronizar'),3000);
+  }catch(e){setSyncStatus('err','✗ Error: '+e.message);}
+}
+let sortField = 'proximoContacto';
+let sortDir = 1;
+let activeContact = null;
+let currentPage = 0;
+const PAGE_SIZE = 100;
+
+const SECTOR_KEYWORDS = {
+  clinica:      ['clinica','clínica','dental','dent','medico','médico','doctor','salud','fisio','optom','oculo','hospital','laboratorio','psicolog','nutriol','ortodoncia','ortodon','implante','radiolog','dermatol','pediatr','ginecol','cardiol','urologo','otorrin','rehabilitacion','quiroprac'],
+  farmacia:     ['farmacia','farma','botica','drogueria','similares','ahorro farma','benavides'],
+  spa:          ['spa','masaje','masajes','wellness','relajacion','relajación','terapia','bienestar','aromaterap'],
+  salon:        ['salon','salón','belleza','estetica','estética','peluquer','barber','uñas','manicure','pedicure','cosmetolog','maquillaje','cabello','nail'],
+  gimnasio:     ['gimnasio','gym','fitness','sport','crossfit','yoga','pilates','box','funcional','entrenamiento','atletismo','natacion','spinning'],
+  restaurante:  ['restaurante','restaurant','sazón','cocina','food','burger','pizza','tacos','fonda','comedor','bistro','grill','mariscos','sushi','ramen','vegano','brunch','loncheria','tortas','cenaduria','antojitos','carnitas','pozole','taqueria','asador','parrilla'],
+  cafeteria:    ['cafeteria','café','cafe','coffee','panaderia','panadería','pasteleria','pastelería','chocol','bakery','dulceria','reposteria','helad','nieve'],
+  bar:          ['bar','cantina','cerveza','pulqueria','mezcal','cocteleria','antro','discoteca','botanero','taberna','vinos','licores'],
+  escuela:      ['escuela','colegio','instituto','academia','kinder','guarderia','preescolar','primaria','secundaria','preparatoria','universidad','liceo','centro educativo','capacitacion','cursos','idiomas','ballet','musica'],
+  inmobiliaria: ['inmobiliaria','inmueble','bienes raices','realty','coldwell','century21','era inmob','remax','sotheby','propiedades','arrendamiento','desarrollos','desarrolladora','constructora','construccion','arquitec','ingenieria','contratista','obra','bienes'],
+  residencial:  ['residencial','departamento','suites','coliving','penthouse','niu ','alure','privee','covive','puerta ','haus','condominio','condo','edificio','torre','fraccionamiento','conjunto habitacional','grand','living','rentals','rooms','studios','apartments'],
+  taller:       ['taller','mecanico','mecánico','llanter','automotriz','refaccion','hojalateria','pintura auto','lavado auto','alineacion','frenos','trasmision','vulcanizadora','electricista auto','suspension'],
+  tienda:       ['tienda','comercio','abarrotes','miscelanea','papeleria','papelería','ferreteria','ferretería','materiales','electronico','celular','telefono','computo','libreria','bazar','merceria','joyeria','optica','zapateria','ropa','moda','boutique','minisupe','conveniencia','market'],
+  despacho:     ['despacho','contable','contador','abogado','juridico','legal','notaria','firma','consultoria','consultoría','asesor','auditoria','fiscal','rh ','recursos humanos','reclutamiento','headhunter'],
+  marketing:    ['marketing','publicidad','agencia','media','digital','diseño','branding','seo','redes sociales','social media','imprenta','fotografia','video','produccion','creativ','comunicacion'],
+  fabrica:      ['fabrica','fábrica','manufactura','industrial','planta','almacen','almacén','bodega','distribuidor','importador','exportador','logistica','logística','paqueteria','mensajeria','cargo','carga','maquiladora'],
+  veterinaria:  ['veterinar','animal','mascota','petshop','pet ','perro','gato','acuario','clinica animal'],
+  lavanderia:   ['lavanderia','laundry','tintoreria','tintorería','planchado'],
+  hotel:        ['hotel','motel','hostal','airbnb','rooms','studio','suite','posada','hospedaje','inn '],
+  viajes:       ['viajes','turismo','tour','agencia de viajes','travel','vacaciones','crucero','excursion'],
+  tecnologia:   ['tecnologia','tecnología','software','sistemas',' it ','tech','informatica','programacion','desarrollo web',' app ','ciberseguridad','soporte tecnico','redes'],
+  financiero:   ['banco','credito','crédito','financiera','prestamos','préstamos','seguro','aseguradora','afore','caja popular','inversion','inversión','bolsa','hipoteca','cambio de divisas'],
+  gobierno:     ['gobierno','delegacion','alcaldia','municipio','secretaria','dependencia','imss','issste','sep','pemex','cfdi'],
+  otro:         [],
+};
+
+function detectSector(nombre, zona) {
+  const text = ((nombre||'') + ' ' + (zona||'')).toLowerCase();
+  for (const [sector, kws] of Object.entries(SECTOR_KEYWORDS)) {
+    if (sector === 'otro') continue;
+    if (kws.some(kw => text.includes(kw))) return sector;
+  }
+  return 'otro';
+}
+
+function diasDesde(dateStr) {
+  if (!dateStr) return null;
+  const d = new Date(dateStr);
+  const now = new Date();
+  return Math.floor((now - d) / 86400000);
+}
+
+function calcProximo(contact) {
+  const status = contact.status || 'nuevo';
+  const dias = diasDesde(contact.ultimoContacto);
+  const reglas = {
+    nuevo: { dias: 0, razon: 'Primer contacto pendiente' },
+    contactado: { dias: 3, razon: 'Seguimiento tras 3 días' },
+    visto: { dias: 2, razon: 'Vio el mensaje, recontactar en 2 días' },
+    respondio: { dias: 1, razon: 'Respondió, dar seguimiento mañana' },
+    frio: { dias: 14, razon: 'Prospectos fríos: reactivar en 2 semanas' },
+  };
+  const regla = reglas[status] || reglas.nuevo;
+  if (!contact.ultimoContacto) return { dias: 0, texto: 'Hoy', razon: regla.razon, urgente: true };
+  const faltan = regla.dias - (dias || 0);
+  if (faltan <= 0) return { dias: 0, texto: 'Hoy', razon: regla.razon, urgente: true };
+  if (faltan === 1) return { dias: 1, texto: 'Mañana', razon: regla.razon, urgente: false };
+  return { dias: faltan, texto: `En ${faltan} días`, razon: regla.razon, urgente: false };
+}
+
+function loadCSV(input) {
+  const files = input.files;
+  let loaded = 0;
+  Array.from(files).forEach(file => {
+    const reader = new FileReader();
+    reader.onload = e => {
+      const text = e.target.result.replace(/\r\n/g,'\n').replace(/\r/g,'\n');
+      const lines = text.split('\n').filter(l => l.trim());
+
+      function parseRow(line) {
+        const result = []; let cur = ''; let inQ = false;
+        for (let i = 0; i < line.length; i++) {
+          if (line[i] === '"') { inQ = !inQ; continue; }
+          if (line[i] === ',' && !inQ) { result.push(cur.trim()); cur = ''; continue; }
+          cur += line[i];
+        }
+        result.push(cur.trim());
+        return result;
+      }
+
+      const header = parseRow(lines[0]).map(h => h.toLowerCase().replace(/[^a-z]/g,''));
+      const nameIdx = header.findIndex(h => h.includes('nombre'));
+      const telIdx = header.findIndex(h => h.includes('telefono') || h === 'tel');
+      const dirIdx = header.findIndex(h => h.includes('direcci') || h.includes('dir'));
+      const zonaIdx = header.findIndex(h => h.includes('zona') || h.includes('query'));
+
+      let added = 0;
+      lines.slice(1).forEach(line => {
+        const row = parseRow(line);
+        const tel = (row[telIdx] || '').replace(/\D/g,'');
+        if (!tel || tel.length < 7) return;
+        const nombre = row[nameIdx] || 'Sin nombre';
+        if (contacts.find(c => c.tel === tel)) return;
+        contacts.push({
+          id: Date.now() + Math.random(),
+          nombre, tel,
+          direccion: row[dirIdx] || '',
+          zona: row[zonaIdx] || '',
+          sector: detectSector(nombre, row[zonaIdx] || ''),
+          status: 'nuevo',
+          ultimoContacto: null,
+          diasVisto: null,
+          notas: '',
+          createdAt: new Date().toISOString()
+        });
+        added++;
+      });
+      save();
+      loaded++;
+      if (loaded === files.length) { updateAll(); alert(`✓ ${added} contactos importados (solo con teléfono, sin duplicados)`); }
+    };
+    reader.readAsText(file, 'utf-8');
+  });
+  input.value = '';
+}
+
+function save() { localStorage.setItem('arqos_crm', JSON.stringify(contacts)); }
+
+function filtered() {
+  const q = (document.getElementById('searchInput')?.value || '').toLowerCase();
+  let list = contacts.filter(c => {
+    if (q && !c.nombre.toLowerCase().includes(q) && !c.tel.includes(q) && !(c.zona||'').toLowerCase().includes(q)) return false;
+    if (currentView === 'validados') return c.waValidado === true && !c.eliminado;
+    if (currentView === 'novalidados') return !c.waValidado && !c.eliminado;
+    if (currentView === 'eliminados') return c.eliminado === true;
+    if (c.eliminado) return false;
+    if (currentView === 'nuevos') return c.status === 'nuevo';
+    if (currentView === 'visto') return c.status === 'visto';
+    if (currentView === 'frio') return c.status === 'frio';
+    if (currentView === 'respondio') return c.status === 'respondio';
+    if (currentView === 'hoy') return calcProximo(c).urgente;
+    if (currentView.startsWith('sec-')) return c.sector === currentView.replace('sec-','');
+    return true;
+  });
+  list.sort((a, b) => {
+    if (sortField === 'nombre') return sortDir * a.nombre.localeCompare(b.nombre);
+    if (sortField === 'dias') return sortDir * ((diasDesde(a.ultimoContacto)||999) - (diasDesde(b.ultimoContacto)||999));
+    if (sortField === 'proximoContacto') return sortDir * (calcProximo(a).dias - calcProximo(b).dias);
+    return 0;
+  });
+  return list;
+}
+
+function statusColor(s) { return {nuevo:'s-nuevo',contactado:'s-contactado',visto:'s-visto',respondio:'s-respondio',frio:'s-frio'}[s]||'s-nuevo'; }
+function statusLabel(s) { return {nuevo:'Nuevo',contactado:'Contactado',visto:'En visto',respondio:'Respondió',frio:'Frío'}[s]||s; }
+function sectorTag(s) { return `<span class="tag tag-${s}">${s.charAt(0).toUpperCase()+s.slice(1)}</span>`; }
+
+function renderTable() {
+  const allList = filtered();
+  const totalPages = Math.ceil(allList.length / PAGE_SIZE);
+  if (currentPage >= totalPages && totalPages > 0) currentPage = totalPages - 1;
+  if (currentPage < 0) currentPage = 0;
+  const list = allList.slice(currentPage * PAGE_SIZE, (currentPage + 1) * PAGE_SIZE);
+
+  const tbody = document.getElementById('tableBody');
+  const table = document.getElementById('mainTable');
+  const empty = document.getElementById('emptyState');
+  const pagTop = document.getElementById('paginationTop');
+
+  if (contacts.length === 0) { table.style.display='none'; empty.style.display='flex'; pagTop.style.display='none'; return; }
+  table.style.display='table'; empty.style.display='none';
+
+  // Pagination controls
+  if (totalPages > 1) {
+    pagTop.style.display='flex';
+    document.getElementById('pageInfo').textContent = `Página ${currentPage+1} de ${totalPages} · ${allList.length} contactos`;
+    document.getElementById('prevBtn').disabled = currentPage === 0;
+    document.getElementById('nextBtn').disabled = currentPage >= totalPages - 1;
+  } else {
+    pagTop.style.display='none';
+  }
+
+  tbody.innerHTML = list.map((c, idx) => {
+    const d = diasDesde(c.ultimoContacto);
+    const prox = calcProximo(c);
+    const diasCls = d === null ? '' : d > 7 ? 'days-danger' : d > 3 ? 'days-warn' : 'days-ok';
+    const isEliminado = currentView === 'eliminados';
+    return `<tr onclick="${isEliminado ? '' : `openContact('${c.id}')`}" style="${isEliminado ? 'opacity:0.7' : ''}">
+      <td style="width:32px;text-align:center" onclick="event.stopPropagation()"><input type="checkbox" class="row-check" data-id="${c.id}" onchange="updateBulkBtn()" style="cursor:pointer"></td>
+      <td style="color:var(--text3);font-size:11px;font-family:'DM Mono',monospace;width:32px">${idx+1+(currentPage*PAGE_SIZE)}</td>
+      <td><div class="contact-name">${c.nombre}</div><div class="contact-sub">${c.direccion||c.zona||'—'}</div></td>
+      <td>${sectorTag(c.sector)}</td>
+      <td style="font-family:'DM Mono',monospace;font-size:12px">${c.tel}</td>
+      <td style="font-size:12px;color:var(--text2)">${c.zona||'—'}</td>
+      <td><span class="status-dot ${statusColor(c.status)}"></span>${statusLabel(c.status)}</td>
+      <td class="days-badge ${diasCls}">${d === null ? 'Nunca' : d === 0 ? 'Hoy' : `Hace ${d}d`}</td>
+      <td style="font-size:12px;${prox.urgente?'color:var(--accent);font-weight:500':'color:var(--text2)'}">${prox.texto}</td>
+      <td class="days-badge ${c.status==='visto'&&c.diasVisto?'days-warn':''}">${c.status==='visto'&&c.diasVisto?c.diasVisto+'d':'—'}</td>
+      <td onclick="event.stopPropagation()" style="white-space:nowrap">
+        <button class="action-btn wa-btn" onclick="openWA('${c.tel}')">💬 WA</button>
+        ${c.waValidado ? `<button class="action-btn" style="border-color:rgba(0,229,160,0.5);color:var(--accent);cursor:default">✅</button>` : `<button class="action-btn" onclick="validarWA('${c.id}',event)" style="border-color:rgba(0,229,160,0.3);color:var(--accent);" title="Marcar como WA válido">✓ WA</button>`}
+        <button class="action-btn ai-btn" onclick="openContact('${c.id}')">✦ IA</button>
+        <button class="action-btn" onclick="confirmDelete('${c.id}','${c.nombre.replace(/'/g,"\\'")}',event)" style="border-color:rgba(239,68,68,0.3);color:#ef4444;">🗑</button>
+      </td>
+    </tr>`;
+  }).join('');
+}
+
+function updateCounts() {
+  const total = contacts.length;
+  const hoy = contacts.filter(c => calcProximo(c).urgente).length;
+  const nuevos = contacts.filter(c => c.status==='nuevo').length;
+  const visto = contacts.filter(c => c.status==='visto').length;
+  const frio = contacts.filter(c => c.status==='frio').length;
+  const respondio = contacts.filter(c => c.status==='respondio').length;
+  const condominios = contacts.filter(c => c.sector==='condominio').length;
+  const edificios = contacts.filter(c => c.sector==='edificio').length;
+  const fraccionamientos = contacts.filter(c => c.sector==='fraccionamiento').length;
+
+  const validados = contacts.filter(c => c.waValidado === true && !c.eliminado).length;
+  const novalidados = contacts.filter(c => !c.waValidado && !c.eliminado).length;
+  const eliminados = contacts.filter(c => c.eliminado === true).length;
+  document.getElementById('cnt-validados').textContent = validados;
+  const elNV = document.getElementById('cnt-novalidados'); if(elNV) elNV.textContent = novalidados;
+  const elim = document.getElementById('cnt-eliminados'); if(elim) elim.textContent = eliminados;
+  document.getElementById('cnt-todos').textContent = total;
+  document.getElementById('cnt-hoy').textContent = hoy;
+  document.getElementById('cnt-nuevos').textContent = nuevos;
+  document.getElementById('cnt-visto').textContent = visto;
+  document.getElementById('cnt-frio').textContent = frio;
+  document.getElementById('cnt-respondio').textContent = respondio;
+  document.getElementById('totalCount').textContent = total;
+
+  // Sectores dinámicos
+  const sectoresMapa = {clinica:'🏥',farmacia:'💊',spa:'💆',salon:'💇',gimnasio:'💪',restaurante:'🍽',cafeteria:'☕',bar:'🍺',escuela:'🎓',inmobiliaria:'🏠',residencial:'🏢',taller:'🔧',tienda:'🛒',despacho:'💼',marketing:'📣',fabrica:'🏭',veterinaria:'🐾',lavanderia:'👕',hotel:'🏨',viajes:'✈️',tecnologia:'💻',financiero:'🏦',gobierno:'🏛',otro:'📁'};
+  const sectoresConteo = {};
+  contacts.forEach(c => { sectoresConteo[c.sector] = (sectoresConteo[c.sector]||0)+1; });
+  const sectorList = document.getElementById('sectorList');
+  if (sectorList) {
+    sectorList.innerHTML = Object.entries(sectoresConteo).sort((a,b)=>b[1]-a[1]).map(([s,n])=>{
+      const icon = sectoresMapa[s] || '📁';
+      const label = s.charAt(0).toUpperCase()+s.slice(1);
+      const isActive = currentView === 'sec-'+s ? ' active' : '';
+      return `<div class="sidebar-item${isActive}" onclick="setView('sec-${s}')" id="view-sec-${s}"><span>${icon}</span> ${label} <span class="count">${n}</span></div>`;
+    }).join('');
+  }
+
+  // Daily plan
+  const seguimientosHoy = contacts.filter(c => !c.eliminado && c.status !== 'nuevo' && c.ultimoContacto && calcProximo(c).urgente).slice(0,10);
+  const elNew = document.getElementById('newCount');
+  if (elNew) elNew.textContent = 0;
+  document.getElementById('followCount').textContent = seguimientosHoy.length;
+  document.getElementById('dp-seguimientos-count').textContent = `${seguimientosHoy.length}/10`;
+
+  const mkMini = (c) => {
+    const d = diasDesde(c.ultimoContacto);
+    const diasStr = d !== null ? `${d}d sin resp.` : '';
+    return `<div class="daily-mini">
+      <span class="daily-mini-name">${c.nombre}</span>
+      <span style="font-size:11px;color:var(--warn);margin-right:6px">${diasStr}</span>
+      <button class="action-btn wa-btn" onclick="openWA('${c.tel}')" style="font-size:11px;padding:3px 8px">WA</button>
+    </div>`;
+  };
+  document.getElementById('dp-seguimientos').innerHTML = seguimientosHoy.length
+    ? seguimientosHoy.map(mkMini).join('')
+    : '<div style="font-size:12px;color:var(--text3);padding:6px 0">Sin seguimientos pendientes</div>';
+}
+
+function updateAll() { updateCounts(); renderTable(); renderMobileList(); }
+
+function changePage(dir) { currentPage += dir; renderTable(); }
+
+function setView(v) {
+  currentView = v; currentPage = 0;
+  document.querySelectorAll('.sidebar-item').forEach(el => el.classList.remove('active'));
+  const el = document.getElementById('view-'+v);
+  if (el) el.classList.add('active');
+  const exportBtn = document.getElementById('exportBtn');
+  if (exportBtn) exportBtn.style.display = v === 'validados' ? 'block' : 'none';
+  const selBtn = document.getElementById('selectAllBtn');
+  if (selBtn) selBtn.style.display = 'block';
+  const bulkBtn = document.getElementById('bulkDeleteBtn');
+  if (bulkBtn) bulkBtn.style.display = 'none';
+  const master = document.getElementById('masterCheck');
+  if (master) master.checked = false;
+  renderTable();
+}
+
+function exportarValidados() {
+  const validados = contacts.filter(c => c.waValidado === true);
+  if (!validados.length) { alert('No hay contactos validados aún.'); return; }
+  const rows = [['#','Nombre','Teléfono','Sector','Zona','Dirección','Estado','Último contacto','Notas']];
+  validados.forEach((c, i) => {
+    rows.push([
+      i+1,
+      c.nombre,
+      c.tel,
+      c.sector,
+      c.zona || '',
+      c.direccion || '',
+      c.status,
+      c.ultimoContacto ? new Date(c.ultimoContacto).toLocaleDateString('es-MX') : 'Nunca',
+      c.notas || ''
+    ]);
+  });
+  const csv = rows.map(r => r.map(v => `"${String(v).replace(/"/g,'""')}"`).join(',')).join('\n');
+  const blob = new Blob(['\uFEFF'+csv], {type:'text/csv;charset=utf-8;'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `validados_arqos_${new Date().toISOString().slice(0,10)}.csv`;
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
+function mobileNav(v) {
+  setView(v);
+  document.querySelectorAll('.mobile-nav-btn').forEach(b => b.classList.remove('active'));
+  const btn = document.getElementById('mnav-' + v);
+  if (btn) btn.classList.add('active');
+}
+
+function renderMobileList() {
+  const isMobile = window.innerWidth <= 768;
+  if (!isMobile) return;
+  const q = (document.getElementById('mSearchInput')?.value || document.getElementById('searchInput')?.value || '').toLowerCase();
+  const allList = filtered();
+  const totalPages = Math.ceil(allList.length / PAGE_SIZE);
+  if (currentPage >= totalPages && totalPages > 0) currentPage = totalPages - 1;
+  if (currentPage < 0) currentPage = 0;
+  const list = allList.slice(currentPage * PAGE_SIZE, (currentPage + 1) * PAGE_SIZE);
+  const isEliminado = currentView === 'eliminados';
+  const container = document.getElementById('mobileList');
+  if (!container) return;
+  container.style.display = 'flex';
+  document.getElementById('mainTable').parentElement.style.display = 'none';
+  if (!list.length) {
+    container.innerHTML = '<div style="text-align:center;padding:40px;color:var(--text3)"><div style="font-size:40px;margin-bottom:12px">📂</div><div style="font-size:15px;color:var(--text2)">Sin contactos</div></div>';
+    return;
+  }
+  container.innerHTML = list.map((c, idx) => {
+    const globalIdx = idx + 1 + (currentPage * PAGE_SIZE);
+    const sectorCap = c.sector ? c.sector.charAt(0).toUpperCase() + c.sector.slice(1) : 'Otro';
+    if (isEliminado) {
+      return `<div class="m-card">
+        <div class="m-card-top">
+          <div class="m-card-num">${globalIdx}</div>
+          <div class="m-card-info">
+            <div class="m-card-name">${c.nombre}</div>
+            <div class="m-card-sub">${c.tel} · ${c.zona||'—'}</div>
+          </div>
+        </div>
+        <div class="m-card-actions">
+          <button class="m-btn" style="border-color:rgba(0,229,160,0.4);color:var(--accent)" onclick="recuperarContacto('${c.id}',event)">↩ Recuperar</button>
+          <button class="m-btn m-btn-del" onclick="eliminarDefinitivo('${c.id}','${c.nombre.replace(/'/g,"\'")}',event)">✕</button>
+        </div>
+      </div>`;
+    }
+    return `<div class="m-card">
+      <div class="m-card-top">
+        <input type="checkbox" class="m-card-check row-check" data-id="${c.id}" onchange="updateBulkBtn()">
+        <div class="m-card-num">${globalIdx}</div>
+        <div class="m-card-info">
+          <div class="m-card-name">${c.nombre}</div>
+          <div class="m-card-sub">${c.zona||'Benito Juárez CDMX'}</div>
+        </div>
+      </div>
+      <div class="m-card-meta">
+        <span class="m-tag">${sectorCap}</span>
+        <span class="m-tel">${c.tel}</span>
+        ${c.waValidado ? '<span class="m-tag" style="border-color:var(--accent);color:var(--accent)">✅ WA</span>' : ''}
+      </div>
+      <div class="m-card-actions">
+        <button class="m-btn m-btn-wa" onclick="openWA('${c.tel}')">💬 WA</button>
+        ${c.waValidado
+          ? '<button class="m-btn m-btn-val validated">✅ Validado</button>'
+          : `<button class="m-btn m-btn-val" onclick="validarWA('${c.id}',event)">✓ Validar</button>`}
+        <button class="m-btn m-btn-del" onclick="confirmDelete('${c.id}','${c.nombre.replace(/'/g,"\'")}',event)">🗑</button>
+      </div>
+    </div>`;
+  }).join('');
+  // Pagination for mobile
+  if (totalPages > 1) {
+    container.innerHTML += `<div style="display:flex;gap:8px;padding:8px 0 16px">
+      <button class="m-btn" onclick="changePage(-1)" ${currentPage===0?'disabled style="opacity:.4"':''}>← Anterior</button>
+      <div class="m-btn" style="cursor:default;font-size:11px;color:var(--text2)">Pág ${currentPage+1}/${totalPages}</div>
+      <button class="m-btn" onclick="changePage(1)" ${currentPage>=totalPages-1?'disabled style="opacity:.4"':''}>Siguiente →</button>
+    </div>`;
+  }
+}
+
+function toggleSort(f) {
+  if (sortField === f) sortDir *= -1; else { sortField = f; sortDir = 1; }
+  renderTable();
+}
+
+function openContact(id) {
+  const c = contacts.find(x => x.id == id);
+  if (!c) return;
+  activeContact = c;
+  document.getElementById('m-name').textContent = c.nombre;
+  document.getElementById('m-sub').textContent = c.zona || c.direccion || '';
+  document.getElementById('m-tel').textContent = c.tel;
+  document.getElementById('m-zona').textContent = c.zona || '—';
+  const d = diasDesde(c.ultimoContacto);
+  document.getElementById('m-ultimo').textContent = c.ultimoContacto ? `Hace ${d}d` : 'Nunca';
+  document.getElementById('m-dias').textContent = d !== null ? `${d} días` : '—';
+  const prox = calcProximo(c);
+  document.getElementById('m-next-text').textContent = prox.texto;
+  document.getElementById('m-next-sub').textContent = prox.razon;
+  // Status buttons
+  ['nuevo','contactado','visto','respondio','frio'].forEach(s => {
+    const btn = document.getElementById('sb-'+s);
+    btn.className = 'status-btn';
+    if (c.status === s) btn.classList.add('active-'+s);
+  });
+  document.getElementById('lastMsg').value = '';
+  document.getElementById('aiResponse').style.display = 'none';
+  document.getElementById('overlay').classList.add('show');
+}
+
+function closeModal(e) { if (e.target === document.getElementById('overlay')) closeModalDirect(); }
+function closeModalDirect() { document.getElementById('overlay').classList.remove('show'); activeContact = null; }
+
+function setStatus(s) {
+  if (!activeContact) return;
+  activeContact.status = s;
+  if (s === 'visto') activeContact.diasVisto = 0;
+  if (s === 'contactado') { activeContact.ultimoContacto = new Date().toISOString(); activeContact.diasVisto = null; }
+  if (s === 'respondio') { activeContact.ultimoContacto = new Date().toISOString(); activeContact.diasVisto = null; }
+  ['nuevo','contactado','visto','respondio','frio'].forEach(st => {
+    const btn = document.getElementById('sb-'+st);
+    btn.className = 'status-btn';
+    if (activeContact.status === st) btn.classList.add('active-'+st);
+  });
+  const prox = calcProximo(activeContact);
+  document.getElementById('m-next-text').textContent = prox.texto;
+  document.getElementById('m-next-sub').textContent = prox.razon;
+}
+
+function validarWA(id, event) {
+  if (event) event.stopPropagation();
+  const c = contacts.find(x => x.id == id);
+  if (!c) return;
+  c.waValidado = true;
+  c.status = c.status === 'nuevo' ? 'nuevo' : c.status;
+  save(); updateAll();
+}
+
+function confirmDelete(id, nombre, event) {
+  if (event) event.stopPropagation();
+  const c = contacts.find(x => x.id == id);
+  if (!c) return;
+  c.eliminado = true;
+  c.eliminadoEn = new Date().toISOString();
+  save(); updateAll();
+}
+
+function recuperarContacto(id, event) {
+  if (event) event.stopPropagation();
+  const c = contacts.find(x => x.id == id);
+  if (!c) return;
+  delete c.eliminado;
+  delete c.eliminadoEn;
+  save(); updateAll();
+}
+
+function eliminarDefinitivo(id, nombre, event) {
+  if (event) event.stopPropagation();
+  if (!confirm(`¿Borrar definitivamente a ${nombre}? Esta acción no se puede deshacer.`)) return;
+  contacts = contacts.filter(c => c.id != id);
+  save(); updateAll();
+}
+
+function bulkDelete() {
+  const checks = document.querySelectorAll('.row-check:checked');
+  if (!checks.length) return;
+  const ids = [...checks].map(c => c.dataset.id);
+  if (currentView === 'eliminados') {
+    if (!confirm(`¿Borrar definitivamente ${ids.length} contactos? No se puede deshacer.`)) return;
+    contacts = contacts.filter(c => !ids.includes(String(c.id)));
+  } else {
+    contacts.forEach(c => { if (ids.includes(String(c.id))) { c.eliminado = true; c.eliminadoEn = new Date().toISOString(); }});
+  }
+  save(); updateAll();
+}
+
+function selectAll() {
+  const checks = document.querySelectorAll('.row-check');
+  const allChecked = [...checks].every(c => c.checked);
+  checks.forEach(c => c.checked = !allChecked);
+  updateBulkBtn();
+}
+
+function toggleMaster(master) {
+  document.querySelectorAll('.row-check').forEach(c => c.checked = master.checked);
+  updateBulkBtn();
+}
+
+function updateBulkBtn() {
+  const checked = document.querySelectorAll('.row-check:checked').length;
+  const btn = document.getElementById('bulkDeleteBtn');
+  const selBtn = document.getElementById('selectAllBtn');
+  if (btn) { btn.style.display = checked > 0 ? 'block' : 'none'; btn.textContent = `🗑 Eliminar ${checked} seleccionados`; }
+  if (selBtn) selBtn.style.display = 'block';
+}
+
+function deleteContact() {
+  if (!activeContact) return;
+  const c = contacts.find(x => x.id === activeContact.id);
+  if (!c) return;
+  c.eliminado = true;
+  c.eliminadoEn = new Date().toISOString();
+  save(); updateAll(); closeModalDirect();
+}
+
+function saveContact() {
+  if (!activeContact) return;
+  const idx = contacts.findIndex(c => c.id === activeContact.id);
+  if (idx >= 0) contacts[idx] = activeContact;
+  save(); updateAll(); closeModalDirect();
+}
+
+function openWA(tel) {
+  const t = (tel||'').replace(/\D/g,'');
+  const num = t.startsWith('52') ? t : '52' + t;
+  window.location.href = `whatsapp://send?phone=${num}`;
+}
+
+function openWhatsApp() {
+  if (activeContact) openWA(activeContact.tel);
+}
+
+async function generateCopy() {
+  if (!activeContact) return;
+  const lastMsg = document.getElementById('lastMsg').value.trim();
+  const btn = document.getElementById('generateBtn');
+  btn.disabled = true;
+  btn.innerHTML = '<span class="spinner"></span> Generando...';
+
+  const ctx = `
+Eres un experto en ventas B2B para una empresa de videovigilancia CCTV llamada Arqos Systems en CDMX.
+Representas al Ing. César Flores. Arqos instala cámaras de seguridad, audio, pantallas y cableado.
+Clientes: Hilton CDMX, Cemex, 26+ restaurantes. Calificación 4.9★. Diagnóstico gratuito sin compromiso.
+
+Prospecto: ${activeContact.nombre}
+Sector: ${activeContact.sector}
+Zona: ${activeContact.zona || 'CDMX'}
+Estado actual: ${activeContact.status}
+Días sin contacto: ${diasDesde(activeContact.ultimoContacto) ?? 'primer contacto'}
+${lastMsg ? `Último mensaje del cliente: "${lastMsg}"` : 'No ha respondido aún.'}
+
+Genera UN mensaje de WhatsApp corto (máximo 4 líneas), natural, profesional, sin sonar spam.
+- Si no ha respondido: mensaje cálido de seguimiento adaptado al sector (condominio/edificio)
+- Si respondió: continúa la conversación de forma inteligente hacia agendar una visita
+- Si me dejó en visto: reactivar sin presionar
+- Termina siempre con UNA pregunta para avanzar
+- Firma como César de Arqos
+- NO uses emojis exagerados, solo 1-2 máximo
+- Escribe SOLO el mensaje, sin explicaciones ni comillas`;
+
+  try {
+    const resp = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-20250514',
+        max_tokens: 1000,
+        messages: [{ role: 'user', content: ctx }]
+      })
+    });
+    const data = await resp.json();
+    const text = data.content?.[0]?.text || 'No se pudo generar el mensaje.';
+    document.getElementById('aiText').textContent = text;
+    document.getElementById('aiResponse').style.display = 'block';
+  } catch(e) {
+    document.getElementById('aiText').textContent = 'Error al conectar con la IA. Intenta de nuevo.';
+    document.getElementById('aiResponse').style.display = 'block';
+  }
+
+  btn.disabled = false;
+  btn.innerHTML = '✦ Generar mensaje con IA';
+}
+
+function copyAI() {
+  const text = document.getElementById('aiText').textContent;
+  navigator.clipboard.writeText(text).then(() => {
+    const btn = document.querySelector('.copy-response');
+    btn.textContent = '✓ Copiado';
+    setTimeout(() => btn.textContent = 'Copiar mensaje', 1500);
+  });
+}
+
+// Update dias visto daily
+function updateDiasVisto() {
+  contacts.forEach(c => {
+    if (c.status === 'visto' && c.ultimoContacto) {
+      c.diasVisto = diasDesde(c.ultimoContacto);
+    }
+  });
+  save();
+}
+
+updateDiasVisto();
+updateAll();
+loadFromGitHub();
+
+// En móvil sin token, abrir config automáticamente
+if (window.innerWidth <= 768 && !getConfig().token) {
+  setTimeout(() => openConfig(), 800);
+}
+
+// Auto-guardado cada 5 minutos
+setInterval(() => {
+  const c = getConfig();
+  if (c.token && contacts.length > 0) syncGitHub();
+}, 5 * 60 * 1000);
+
+// Mostrar último guardado
+const lastSync = localStorage.getItem('last_sync');
+if (lastSync) setSyncStatus('ok', `↑ Último guardado: ${lastSync}`);
+
+</script>
+</body>
+</html>
