@@ -1367,7 +1367,9 @@
     "ultimoContacto": null,
     "diasVisto": null,
     "notas": "",
-    "createdAt": "2026-03-21T10:02:07.853Z"
+    "createdAt": "2026-03-21T10:02:07.853Z",
+    "eliminado": true,
+    "eliminadoEn": "2026-03-21T11:50:19.632Z"
   },
   {
     "id": 1774087327854.0999,
@@ -1380,7 +1382,9 @@
     "ultimoContacto": null,
     "diasVisto": null,
     "notas": "",
-    "createdAt": "2026-03-21T10:02:07.854Z"
+    "createdAt": "2026-03-21T10:02:07.854Z",
+    "eliminado": true,
+    "eliminadoEn": "2026-03-21T11:50:25.557Z"
   },
   {
     "id": 1774087327854.146,
@@ -1393,7 +1397,8 @@
     "ultimoContacto": null,
     "diasVisto": null,
     "notas": "",
-    "createdAt": "2026-03-21T10:02:07.854Z"
+    "createdAt": "2026-03-21T10:02:07.854Z",
+    "waValidado": true
   },
   {
     "id": 1774087327854.533,
@@ -1406,7 +1411,9 @@
     "ultimoContacto": null,
     "diasVisto": null,
     "notas": "",
-    "createdAt": "2026-03-21T10:02:07.854Z"
+    "createdAt": "2026-03-21T10:02:07.854Z",
+    "eliminado": true,
+    "eliminadoEn": "2026-03-21T11:50:35.570Z"
   },
   {
     "id": 1774087327854.3687,
@@ -1419,7 +1426,8 @@
     "ultimoContacto": null,
     "diasVisto": null,
     "notas": "",
-    "createdAt": "2026-03-21T10:02:07.854Z"
+    "createdAt": "2026-03-21T10:02:07.854Z",
+    "waValidado": true
   },
   {
     "id": 1774087327854.9302,
@@ -1432,7 +1440,9 @@
     "ultimoContacto": null,
     "diasVisto": null,
     "notas": "",
-    "createdAt": "2026-03-21T10:02:07.854Z"
+    "createdAt": "2026-03-21T10:02:07.854Z",
+    "eliminado": true,
+    "eliminadoEn": "2026-03-21T11:50:54.420Z"
   },
   {
     "id": 1774087327854.6658,
@@ -1445,7 +1455,9 @@
     "ultimoContacto": null,
     "diasVisto": null,
     "notas": "",
-    "createdAt": "2026-03-21T10:02:07.854Z"
+    "createdAt": "2026-03-21T10:02:07.854Z",
+    "eliminado": true,
+    "eliminadoEn": "2026-03-21T11:50:59.813Z"
   },
   {
     "id": 1774087327854.2263,
@@ -1458,7 +1470,9 @@
     "ultimoContacto": null,
     "diasVisto": null,
     "notas": "",
-    "createdAt": "2026-03-21T10:02:07.854Z"
+    "createdAt": "2026-03-21T10:02:07.854Z",
+    "eliminado": true,
+    "eliminadoEn": "2026-03-21T11:51:04.528Z"
   },
   {
     "id": 1774087327854.32,
@@ -1471,7 +1485,9 @@
     "ultimoContacto": null,
     "diasVisto": null,
     "notas": "",
-    "createdAt": "2026-03-21T10:02:07.854Z"
+    "createdAt": "2026-03-21T10:02:07.854Z",
+    "eliminado": true,
+    "eliminadoEn": "2026-03-21T11:51:09.337Z"
   },
   {
     "id": 1774087327854.9175,
@@ -1484,7 +1500,8 @@
     "ultimoContacto": null,
     "diasVisto": null,
     "notas": "",
-    "createdAt": "2026-03-21T10:02:07.854Z"
+    "createdAt": "2026-03-21T10:02:07.854Z",
+    "waValidado": true
   },
   {
     "id": 1774087327854.9539,
@@ -1497,7 +1514,8 @@
     "ultimoContacto": null,
     "diasVisto": null,
     "notas": "",
-    "createdAt": "2026-03-21T10:02:07.854Z"
+    "createdAt": "2026-03-21T10:02:07.854Z",
+    "waValidado": true
   },
   {
     "id": 1774087327854.2708,
@@ -1510,7 +1528,9 @@
     "ultimoContacto": null,
     "diasVisto": null,
     "notas": "",
-    "createdAt": "2026-03-21T10:02:07.854Z"
+    "createdAt": "2026-03-21T10:02:07.854Z",
+    "eliminado": true,
+    "eliminadoEn": "2026-03-21T11:51:30.621Z"
   },
   {
     "id": 1774087327854.8567,
@@ -1523,7 +1543,8 @@
     "ultimoContacto": null,
     "diasVisto": null,
     "notas": "",
-    "createdAt": "2026-03-21T10:02:07.854Z"
+    "createdAt": "2026-03-21T10:02:07.854Z",
+    "waValidado": true
   },
   {
     "id": 1774087327854.7683,
@@ -1536,7 +1557,9 @@
     "ultimoContacto": null,
     "diasVisto": null,
     "notas": "",
-    "createdAt": "2026-03-21T10:02:07.854Z"
+    "createdAt": "2026-03-21T10:02:07.854Z",
+    "eliminado": true,
+    "eliminadoEn": "2026-03-21T11:51:42.682Z"
   },
   {
     "id": 1774087327854.974,
@@ -1549,7 +1572,9 @@
     "ultimoContacto": null,
     "diasVisto": null,
     "notas": "",
-    "createdAt": "2026-03-21T10:02:07.854Z"
+    "createdAt": "2026-03-21T10:02:07.854Z",
+    "eliminado": true,
+    "eliminadoEn": "2026-03-21T11:51:49.791Z"
   },
   {
     "id": 1774087327854.0808,
@@ -1562,7 +1587,8 @@
     "ultimoContacto": null,
     "diasVisto": null,
     "notas": "",
-    "createdAt": "2026-03-21T10:02:07.854Z"
+    "createdAt": "2026-03-21T10:02:07.854Z",
+    "waValidado": true
   },
   {
     "id": 1774087327854.2886,
