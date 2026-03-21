@@ -546,7 +546,8 @@
     "ultimoContacto": null,
     "diasVisto": null,
     "notas": "",
-    "createdAt": "2026-03-21T10:02:07.852Z"
+    "createdAt": "2026-03-21T10:02:07.852Z",
+    "waValidado": true
   },
   {
     "id": 1774087327852.3796,
@@ -559,7 +560,8 @@
     "ultimoContacto": null,
     "diasVisto": null,
     "notas": "",
-    "createdAt": "2026-03-21T10:02:07.852Z"
+    "createdAt": "2026-03-21T10:02:07.852Z",
+    "waValidado": true
   },
   {
     "id": 1774087327852.2632,
