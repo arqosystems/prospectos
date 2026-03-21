@@ -1,0 +1,511 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Arqos CRM</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#0f0f0f;--surface:#181818;--surface2:#222;--border:#2a2a2a;--border2:#333;--text:#f0f0f0;--text2:#888;--text3:#555;--accent:#00e5a0;--accent2:#00b87d;--warn:#f59e0b;--danger:#ef4444;--info:#3b82f6;--whatsapp:#25d366;--radius:10px;--radius-sm:6px}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;font-size:14px}
+.app{display:grid;grid-template-columns:240px 1fr;grid-template-rows:56px 1fr;height:100vh;overflow:hidden}
+.topbar{grid-column:1/-1;background:var(--surface);border-bottom:1px solid var(--border);display:flex;align-items:center;padding:0 20px;gap:16px}
+.topbar-logo{font-size:15px;font-weight:600;letter-spacing:.05em;color:var(--accent)}
+.topbar-sep{width:1px;height:20px;background:var(--border)}
+.topbar-title{font-size:13px;color:var(--text2)}
+.topbar-right{margin-left:auto;display:flex;align-items:center;gap:10px}
+.daily-badge{background:var(--surface2);border:1px solid var(--border);border-radius:20px;padding:4px 12px;font-size:12px;color:var(--text2);display:flex;align-items:center;gap:6px}
+.daily-badge span{color:var(--accent);font-weight:600;font-family:'DM Mono',monospace}
+.sync-btn{padding:5px 12px;background:transparent;border:1px solid var(--border);border-radius:var(--radius-sm);color:var(--text2);font-size:12px;font-family:'DM Sans',sans-serif;cursor:pointer}
+.sync-btn:hover{border-color:var(--accent2);color:var(--accent)}
+.sync-ok{border-color:var(--accent2)!important;color:var(--accent)!important}
+.sync-err{border-color:var(--danger)!important;color:var(--danger)!important}
+.sidebar{background:var(--surface);border-right:1px solid var(--border);display:flex;flex-direction:column;overflow:hidden}
+.sidebar-section{padding:16px 12px 8px;font-size:10px;font-weight:600;letter-spacing:.1em;color:var(--text3);text-transform:uppercase}
+.sidebar-item{display:flex;align-items:center;gap:10px;padding:8px 12px;border-radius:var(--radius-sm);margin:1px 8px;cursor:pointer;color:var(--text2);font-size:13px;transition:all .15s}
+.sidebar-item:hover{background:var(--surface2);color:var(--text)}
+.sidebar-item.active{background:rgba(0,229,160,.08);color:var(--accent)}
+.sidebar-item .count{margin-left:auto;background:var(--surface2);border-radius:10px;padding:1px 7px;font-size:11px;font-family:'DM Mono',monospace}
+.sidebar-bottom{margin-top:auto;padding:12px;display:flex;flex-direction:column;gap:8px}
+.upload-btn{width:100%;padding:10px;background:rgba(0,229,160,.08);border:1px dashed var(--accent2);border-radius:var(--radius);color:var(--accent);font-size:13px;font-family:'DM Sans',sans-serif;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;transition:all .15s}
+.upload-btn:hover{background:rgba(0,229,160,.15)}
+.config-btn{width:100%;padding:8px;background:transparent;border:1px solid var(--border);border-radius:var(--radius);color:var(--text2);font-size:12px;font-family:'DM Sans',sans-serif;cursor:pointer}
+.config-btn:hover{border-color:var(--text2);color:var(--text)}
+.main{overflow:hidden;display:flex;flex-direction:column}
+.toolbar{padding:12px 20px;display:flex;align-items:center;gap:10px;border-bottom:1px solid var(--border);flex-shrink:0}
+.search{flex:1;background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius-sm);padding:7px 12px;color:var(--text);font-family:'DM Sans',sans-serif;font-size:13px;outline:none}
+.search:focus{border-color:var(--accent2)}
+.filter-btn{padding:7px 12px;background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius-sm);color:var(--text2);font-size:13px;font-family:'DM Sans',sans-serif;cursor:pointer;white-space:nowrap}
+.filter-btn.active{border-color:var(--accent2);color:var(--accent);background:rgba(0,229,160,.06)}
+.daily-panel{background:var(--surface);border-bottom:1px solid var(--border);padding:12px 20px;flex-shrink:0}
+.daily-col{background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius);padding:12px 14px}
+.daily-col-title{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.08em;color:var(--text3);margin-bottom:8px;display:flex;align-items:center;justify-content:space-between}
+.daily-col-title span{font-family:'DM Mono',monospace;color:var(--accent);font-size:13px;font-weight:500;letter-spacing:0;text-transform:none}
+.daily-mini{font-size:12px;color:var(--text2);padding:5px 0;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;gap:8px}
+.daily-mini:last-child{border-bottom:none}
+.daily-mini-name{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;flex:1}
+.table-wrap{flex:1;overflow-y:auto}
+table{width:100%;border-collapse:collapse}
+thead th{position:sticky;top:0;background:var(--surface);padding:10px 14px;text-align:left;font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.07em;color:var(--text3);border-bottom:1px solid var(--border);white-space:nowrap}
+tbody tr{border-bottom:1px solid var(--border);cursor:pointer;transition:background .1s}
+tbody tr:hover{background:var(--surface2)}
+td{padding:10px 14px;vertical-align:middle}
+.contact-name{font-weight:500;font-size:13px}
+.contact-sub{font-size:11px;color:var(--text2);margin-top:2px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:200px}
+.tag{display:inline-block;padding:2px 8px;border-radius:10px;font-size:11px;font-weight:500}
+.tag-condominio{background:rgba(59,130,246,.15);color:#60a5fa}
+.tag-edificio{background:rgba(168,85,247,.15);color:#c084fc}
+.tag-fraccionamiento{background:rgba(245,158,11,.15);color:#fbbf24}
+.tag-otro{background:rgba(100,116,139,.15);color:#94a3b8}
+.status-dot{width:8px;height:8px;border-radius:50%;display:inline-block;margin-right:6px}
+.s-nuevo{background:var(--accent)}.s-contactado{background:var(--info)}.s-visto{background:var(--warn)}.s-respondio{background:#22c55e}.s-frio{background:var(--danger)}
+.days-badge{font-family:'DM Mono',monospace;font-size:12px}
+.days-ok{color:var(--accent)}.days-warn{color:var(--warn)}.days-danger{color:var(--danger)}
+.action-btn{padding:5px 10px;border-radius:var(--radius-sm);font-size:12px;font-family:'DM Sans',sans-serif;cursor:pointer;border:1px solid var(--border);background:transparent;color:var(--text2);transition:all .15s;white-space:nowrap}
+.action-btn:hover{border-color:var(--text2);color:var(--text)}
+.wa-btn{border-color:rgba(37,211,102,.3);color:var(--whatsapp)}.wa-btn:hover{background:rgba(37,211,102,.08);border-color:var(--whatsapp)}
+.ai-btn{border-color:rgba(0,229,160,.3);color:var(--accent)}.ai-btn:hover{background:rgba(0,229,160,.08);border-color:var(--accent)}
+.del-btn{border-color:rgba(239,68,68,.3);color:var(--danger)}.del-btn:hover{background:rgba(239,68,68,.08);border-color:var(--danger)}
+.overlay{position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:100;display:none;align-items:center;justify-content:center;backdrop-filter:blur(4px)}
+.overlay.show{display:flex}
+.modal{background:var(--surface);border:1px solid var(--border2);border-radius:14px;width:580px;max-height:90vh;overflow-y:auto}
+.modal-header{padding:20px 24px 16px;border-bottom:1px solid var(--border);display:flex;align-items:flex-start;justify-content:space-between}
+.modal-name{font-size:18px;font-weight:600}
+.modal-sub{font-size:13px;color:var(--text2);margin-top:3px}
+.modal-close{background:none;border:none;color:var(--text3);cursor:pointer;font-size:20px;line-height:1;padding:2px}
+.modal-body{padding:20px 24px}
+.modal-section{margin-bottom:20px}
+.modal-label{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.08em;color:var(--text3);margin-bottom:8px}
+.status-grid{display:flex;gap:6px;flex-wrap:wrap}
+.status-btn{padding:6px 14px;border-radius:20px;font-size:12px;font-family:'DM Sans',sans-serif;cursor:pointer;border:1px solid var(--border);background:var(--surface2);color:var(--text2);transition:all .15s}
+.status-btn.active-nuevo{border-color:var(--accent);color:var(--accent);background:rgba(0,229,160,.08)}
+.status-btn.active-contactado{border-color:var(--info);color:#60a5fa;background:rgba(59,130,246,.08)}
+.status-btn.active-visto{border-color:var(--warn);color:var(--warn);background:rgba(245,158,11,.08)}
+.status-btn.active-respondio{border-color:#22c55e;color:#22c55e;background:rgba(34,197,94,.08)}
+.status-btn.active-frio{border-color:var(--danger);color:var(--danger);background:rgba(239,68,68,.08)}
+.msg-input{width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius);padding:10px 12px;color:var(--text);font-family:'DM Sans',sans-serif;font-size:13px;resize:vertical;min-height:80px;outline:none;line-height:1.5}
+.msg-input:focus{border-color:var(--accent2)}
+.generate-btn{width:100%;padding:10px;background:rgba(0,229,160,.08);border:1px solid var(--accent2);border-radius:var(--radius);color:var(--accent);font-size:13px;font-weight:500;font-family:'DM Sans',sans-serif;cursor:pointer;margin-top:8px;transition:all .15s}
+.generate-btn:hover{background:rgba(0,229,160,.15)}
+.generate-btn:disabled{opacity:.5;cursor:not-allowed}
+.ai-response{background:var(--surface2);border:1px solid var(--border2);border-radius:var(--radius);padding:14px;margin-top:10px;font-size:13px;line-height:1.6;color:var(--text);white-space:pre-wrap;display:none}
+.ai-label{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.1em;color:var(--accent);margin-bottom:6px}
+.copy-response{margin-top:8px;padding:7px 14px;background:transparent;border:1px solid var(--border);border-radius:var(--radius-sm);color:var(--text2);font-size:12px;font-family:'DM Sans',sans-serif;cursor:pointer}
+.copy-response:hover{border-color:var(--text2);color:var(--text)}
+.next-contact{background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius);padding:12px 14px;display:flex;align-items:center;gap:10px}
+.next-text{font-size:13px;color:var(--text)}
+.next-sub{font-size:12px;color:var(--text2);margin-top:2px}
+.modal-actions{display:flex;gap:8px;margin-top:16px}
+.btn-primary{flex:1;padding:10px;background:var(--accent);color:#000;border:none;border-radius:var(--radius);font-size:13px;font-weight:600;font-family:'DM Sans',sans-serif;cursor:pointer}
+.btn-wa{flex:1;padding:10px;background:rgba(37,211,102,.1);border:1px solid rgba(37,211,102,.3);color:var(--whatsapp);border-radius:var(--radius);font-size:13px;font-weight:500;font-family:'DM Sans',sans-serif;cursor:pointer}
+.btn-delete{padding:10px 14px;background:transparent;border:1px solid rgba(239,68,68,.4);color:#ef4444;border-radius:var(--radius);font-size:13px;font-weight:500;font-family:'DM Sans',sans-serif;cursor:pointer}
+.btn-delete:hover{background:rgba(239,68,68,.08)}
+.empty{display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;color:var(--text3);gap:12px;padding:40px;text-align:center}
+.empty-icon{font-size:48px;opacity:.3}
+.empty-title{font-size:16px;font-weight:500;color:var(--text2)}
+.empty-sub{font-size:13px;max-width:300px;line-height:1.5}
+.info-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.info-item{background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius-sm);padding:10px 12px}
+.info-item-label{font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:.07em;margin-bottom:4px}
+.info-item-val{font-size:13px;font-weight:500}
+::-webkit-scrollbar{width:4px}::-webkit-scrollbar-track{background:transparent}::-webkit-scrollbar-thumb{background:var(--border2);border-radius:2px}
+.spinner{display:inline-block;width:14px;height:14px;border:2px solid rgba(0,229,160,.2);border-top-color:var(--accent);border-radius:50%;animation:spin .7s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+/* Config modal */
+.config-modal{background:var(--surface);border:1px solid var(--border2);border-radius:14px;width:480px;padding:24px}
+.config-input{width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius);padding:10px 12px;color:var(--text);font-family:'DM Mono',monospace;font-size:12px;outline:none;margin-bottom:8px}
+.config-input:focus{border-color:var(--accent2)}
+.config-note{font-size:11px;color:var(--text3);line-height:1.5;margin-bottom:16px}
+.config-save{width:100%;padding:10px;background:var(--accent);color:#000;border:none;border-radius:var(--radius);font-size:13px;font-weight:600;font-family:'DM Sans',sans-serif;cursor:pointer}
+</style>
+</head>
+<body>
+<div class="app">
+  <div class="topbar">
+    <div class="topbar-logo">ARQOS</div>
+    <div class="topbar-sep"></div>
+    <div class="topbar-title">CRM de Prospectos</div>
+    <div class="topbar-right">
+      <button class="sync-btn" id="syncBtn" onclick="syncGitHub()">↑ Sincronizar</button>
+      <div class="daily-badge">Seguimientos <span id="followCount">0</span>/10</div>
+      <div class="daily-badge">Total: <span id="totalCount">0</span></div>
+    </div>
+  </div>
+  <div class="sidebar">
+    <div class="sidebar-section">Vistas</div>
+    <div class="sidebar-item active" onclick="setView('todos')" id="view-todos"><span>📋</span> Todos <span class="count" id="cnt-todos">0</span></div>
+    <div class="sidebar-item" onclick="setView('hoy')" id="view-hoy"><span>🎯</span> Contactar hoy <span class="count" id="cnt-hoy">0</span></div>
+    <div class="sidebar-item" onclick="setView('nuevos')" id="view-nuevos"><span>✨</span> Nuevos <span class="count" id="cnt-nuevos">0</span></div>
+    <div class="sidebar-item" onclick="setView('visto')" id="view-visto"><span>👁</span> En visto <span class="count" id="cnt-visto">0</span></div>
+    <div class="sidebar-item" onclick="setView('frio')" id="view-frio"><span>❄️</span> Frío <span class="count" id="cnt-frio">0</span></div>
+    <div class="sidebar-item" onclick="setView('respondio')" id="view-respondio"><span>💬</span> Respondieron <span class="count" id="cnt-respondio">0</span></div>
+    <div class="sidebar-section">Sectores</div>
+    <div class="sidebar-item" onclick="setView('sec-condominio')" id="view-sec-condominio"><span>🏢</span> Condominios <span class="count" id="cnt-condominio">0</span></div>
+    <div class="sidebar-item" onclick="setView('sec-edificio')" id="view-sec-edificio"><span>🏗</span> Edificios <span class="count" id="cnt-edificio">0</span></div>
+    <div class="sidebar-item" onclick="setView('sec-fraccionamiento')" id="view-sec-fraccionamiento"><span>🏘</span> Fraccionamientos <span class="count" id="cnt-fraccionamiento">0</span></div>
+    <div class="sidebar-bottom">
+      <input type="file" id="csvInput" accept=".csv" style="display:none" multiple onchange="loadCSV(this)">
+      <button class="upload-btn" onclick="document.getElementById('csvInput').click()">＋ Cargar CSV</button>
+      <button class="config-btn" onclick="openConfig()">⚙ Configurar GitHub</button>
+    </div>
+  </div>
+  <div class="main">
+    <div class="daily-panel">
+      <div class="daily-col">
+        <div class="daily-col-title">📲 Seguimientos del día <span id="dp-seguimientos-count">0/10</span></div>
+        <div id="dp-seguimientos"></div>
+      </div>
+    </div>
+    <div class="toolbar">
+      <input class="search" placeholder="Buscar nombre, teléfono, colonia..." oninput="renderTable()" id="searchInput">
+      <button class="filter-btn" onclick="toggleSort('nombre')">Nombre ↕</button>
+      <button class="filter-btn" onclick="toggleSort('dias')">Días ↕</button>
+      <button class="filter-btn active" onclick="toggleSort('proximoContacto')">Próximo ↕</button>
+    </div>
+    <div class="table-wrap">
+      <div id="emptyState" class="empty" style="display:none">
+        <div class="empty-icon">📂</div>
+        <div class="empty-title">No hay prospectos cargados</div>
+        <div class="empty-sub">Carga tu CSV o configura GitHub para sincronizar.</div>
+      </div>
+      <table id="mainTable" style="display:none">
+        <thead><tr><th>Contacto</th><th>Sector</th><th>Teléfono</th><th>Zona</th><th>Estado</th><th>Último contacto</th><th>Próximo</th><th>Días visto</th><th>Acciones</th></tr></thead>
+        <tbody id="tableBody"></tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- Contact Modal -->
+<div class="overlay" id="overlay" onclick="closeModal(event)">
+  <div class="modal" onclick="event.stopPropagation()">
+    <div class="modal-header">
+      <div><div class="modal-name" id="m-name"></div><div class="modal-sub" id="m-sub"></div></div>
+      <button class="modal-close" onclick="closeModalDirect()">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="modal-section">
+        <div class="info-grid">
+          <div class="info-item"><div class="info-item-label">Teléfono</div><div class="info-item-val" id="m-tel">—</div></div>
+          <div class="info-item"><div class="info-item-label">Zona</div><div class="info-item-val" id="m-zona">—</div></div>
+          <div class="info-item"><div class="info-item-label">Último contacto</div><div class="info-item-val" id="m-ultimo">—</div></div>
+          <div class="info-item"><div class="info-item-label">Días sin respuesta</div><div class="info-item-val" id="m-dias">—</div></div>
+        </div>
+      </div>
+      <div class="modal-section">
+        <div class="modal-label">Estado del prospecto</div>
+        <div class="status-grid">
+          <button class="status-btn" onclick="setStatus('nuevo')" id="sb-nuevo">✨ Nuevo</button>
+          <button class="status-btn" onclick="setStatus('contactado')" id="sb-contactado">📤 Contactado</button>
+          <button class="status-btn" onclick="setStatus('visto')" id="sb-visto">👁 En visto</button>
+          <button class="status-btn" onclick="setStatus('respondio')" id="sb-respondio">💬 Respondió</button>
+          <button class="status-btn" onclick="setStatus('frio')" id="sb-frio">❄️ Frío</button>
+        </div>
+      </div>
+      <div class="modal-section">
+        <div class="modal-label">Próximo contacto recomendado</div>
+        <div class="next-contact"><span style="font-size:20px">📅</span><div><div class="next-text" id="m-next-text">—</div><div class="next-sub" id="m-next-sub"></div></div></div>
+      </div>
+      <div class="modal-section">
+        <div class="modal-label">Último mensaje del cliente (para generar respuesta)</div>
+        <textarea class="msg-input" id="lastMsg" placeholder="Pega el último mensaje que te respondió, o déjalo vacío si no ha respondido..."></textarea>
+        <button class="generate-btn" onclick="generateCopy()" id="generateBtn">✦ Generar mensaje con IA</button>
+        <div class="ai-response" id="aiResponse">
+          <div class="ai-label">✦ Mensaje sugerido</div>
+          <div id="aiText"></div>
+          <button class="copy-response" onclick="copyAI()">Copiar mensaje</button>
+        </div>
+      </div>
+      <div class="modal-actions">
+        <button class="btn-delete" onclick="deleteContact()">🗑 Eliminar</button>
+        <button class="btn-wa" onclick="openWhatsApp()">💬 WhatsApp</button>
+        <button class="btn-primary" onclick="saveContact()">Guardar</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Config Modal -->
+<div class="overlay" id="configOverlay" onclick="closeConfig(event)">
+  <div class="config-modal" onclick="event.stopPropagation()">
+    <div style="font-size:16px;font-weight:600;margin-bottom:4px">⚙ Configurar GitHub</div>
+    <div style="font-size:12px;color:var(--text2);margin-bottom:16px">Los datos se guardarán en tu repo de GitHub y estarán disponibles desde cualquier dispositivo.</div>
+    <div class="modal-label">GitHub Token (Personal Access Token)</div>
+    <input class="config-input" type="password" id="ghToken" placeholder="ghp_...">
+    <div class="modal-label">Usuario de GitHub</div>
+    <input class="config-input" type="text" id="ghUser" placeholder="arqosystems">
+    <div class="modal-label">Nombre del repositorio</div>
+    <input class="config-input" type="text" id="ghRepo" placeholder="prospectos">
+    <div class="config-note">El CRM guardará los datos en un archivo <code>datos.json</code> dentro de tu repositorio. Asegúrate de que el token tenga permisos de <strong>repo</strong>.</div>
+    <button class="config-save" onclick="saveConfig()">Guardar configuración</button>
+  </div>
+</div>
+
+<script>
+let contacts = [];
+let currentView = 'todos';
+let sortField = 'proximoContacto';
+let sortDir = 1;
+let activeContact = null;
+let ghSha = null;
+
+const SECTOR_KW = {condominio:['condominio','condo'],edificio:['edificio','torre','residencial','conjunto','habitacional'],fraccionamiento:['fraccionamiento','fracc']};
+function detectSector(n,z){const t=(n+' '+(z||'')).toLowerCase();for(const[s,kws]of Object.entries(SECTOR_KW)){if(kws.some(k=>t.includes(k)))return s;}return 'otro';}
+function diasDesde(d){if(!d)return null;return Math.floor((new Date()-new Date(d))/86400000);}
+function calcProximo(c){const s=c.status||'nuevo';const d=diasDesde(c.ultimoContacto);const r={nuevo:{dias:0,razon:'Primer contacto pendiente'},contactado:{dias:3,razon:'Seguimiento tras 3 días'},visto:{dias:2,razon:'Vio el mensaje, recontactar en 2 días'},respondio:{dias:1,razon:'Respondió — dar seguimiento mañana'},frio:{dias:14,razon:'Reactivar en 2 semanas'}};const rr=r[s]||r.nuevo;if(!c.ultimoContacto)return{dias:0,texto:'Hoy',razon:rr.razon,urgente:true};const f=rr.dias-(d||0);if(f<=0)return{dias:0,texto:'Hoy',razon:rr.razon,urgente:true};if(f===1)return{dias:1,texto:'Mañana',razon:rr.razon,urgente:false};return{dias:f,texto:`En ${f} días`,razon:rr.razon,urgente:false};}
+
+// GitHub Storage
+function getConfig(){return{token:localStorage.getItem('gh_token')||'',user:localStorage.getItem('gh_user')||'arqosystems',repo:localStorage.getItem('gh_repo')||'prospectos'};}
+function saveConfig(){
+  const t=document.getElementById('ghToken').value.trim();
+  const u=document.getElementById('ghUser').value.trim();
+  const r=document.getElementById('ghRepo').value.trim();
+  if(!t||!u||!r){alert('Completa todos los campos');return;}
+  localStorage.setItem('gh_token',t);localStorage.setItem('gh_user',u);localStorage.setItem('gh_repo',r);
+  document.getElementById('configOverlay').classList.remove('show');
+  loadFromGitHub();
+}
+function openConfig(){
+  const c=getConfig();
+  document.getElementById('ghToken').value=c.token;
+  document.getElementById('ghUser').value=c.user;
+  document.getElementById('ghRepo').value=c.repo;
+  document.getElementById('configOverlay').classList.add('show');
+}
+function closeConfig(e){if(e.target===document.getElementById('configOverlay'))document.getElementById('configOverlay').classList.remove('show');}
+
+async function loadFromGitHub(){
+  const c=getConfig();if(!c.token){setSyncStatus('config');return;}
+  setSyncStatus('loading');
+  try{
+    const r=await fetch(`https://api.github.com/repos/${c.user}/${c.repo}/contents/datos.json`,{headers:{'Authorization':`token ${c.token}`,'Accept':'application/vnd.github.v3+json'}});
+    if(r.status===404){setSyncStatus('ok','Sin datos aún');updateAll();return;}
+    if(!r.ok)throw new Error('Error '+r.status);
+    const data=await r.json();
+    ghSha=data.sha;
+    const decoded=JSON.parse(atob(data.content.replace(/\n/g,'')));
+    contacts=decoded;
+    setSyncStatus('ok');updateAll();
+  }catch(e){setSyncStatus('err','Error al cargar: '+e.message);updateAll();}
+}
+
+async function syncGitHub(){
+  const c=getConfig();if(!c.token){openConfig();return;}
+  setSyncStatus('loading');
+  try{
+    const content=btoa(unescape(encodeURIComponent(JSON.stringify(contacts,null,2))));
+    const body={message:'CRM actualizado',content};
+    if(ghSha)body.sha=ghSha;
+    const r=await fetch(`https://api.github.com/repos/${c.user}/${c.repo}/contents/datos.json`,{method:'PUT',headers:{'Authorization':`token ${c.token}`,'Accept':'application/vnd.github.v3+json','Content-Type':'application/json'},body:JSON.stringify(body)});
+    if(!r.ok)throw new Error('Error '+r.status);
+    const data=await r.json();
+    ghSha=data.content.sha;
+    setSyncStatus('ok','Guardado ✓');
+  }catch(e){setSyncStatus('err','Error: '+e.message);}
+}
+
+function setSyncStatus(s,msg){
+  const btn=document.getElementById('syncBtn');
+  btn.className='sync-btn';
+  if(s==='loading'){btn.textContent='⟳ Sincronizando...';btn.disabled=true;}
+  else if(s==='ok'){btn.textContent=msg||'↑ Sincronizar';btn.classList.add('sync-ok');btn.disabled=false;}
+  else if(s==='err'){btn.textContent=msg||'✗ Error';btn.classList.add('sync-err');btn.disabled=false;}
+  else{btn.textContent='⚙ Configurar';btn.disabled=false;}
+}
+
+function save(){localStorage.setItem('arqos_crm_cache',JSON.stringify(contacts));}
+
+function loadCSV(input){
+  const files=input.files;let loaded=0;
+  Array.from(files).forEach(file=>{
+    const reader=new FileReader();
+    reader.onload=e=>{
+      try{
+        const text=e.target.result.replace(/\r\n/g,'\n').replace(/\r/g,'\n');
+        const lines=text.split('\n').filter(l=>l.trim());
+        function parseRow(line){const res=[];let cur='';let inQ=false;for(let i=0;i<line.length;i++){if(line[i]==='"'){inQ=!inQ;continue;}if(line[i]===','&&!inQ){res.push(cur.trim());cur='';continue;}cur+=line[i];}res.push(cur.trim());return res;}
+        const header=parseRow(lines[0]).map(h=>h.toLowerCase().replace(/[^a-z]/g,''));
+        const ni=header.findIndex(h=>h.includes('nombre'));
+        const ti=header.findIndex(h=>h.includes('telefono')||h==='tel');
+        const di=header.findIndex(h=>h.includes('direcci')||h.includes('dir'));
+        const zi=header.findIndex(h=>h.includes('zona')||h.includes('query'));
+        let added=0;
+        lines.slice(1).forEach(line=>{
+          const row=parseRow(line);
+          const tel=(row[ti]||'').replace(/\D/g,'');
+          if(!tel||tel.length<7)return;
+          if(contacts.find(c=>c.tel===tel))return;
+          contacts.push({id:Date.now()+Math.random(),nombre:row[ni]||'Sin nombre',tel,direccion:row[di]||'',zona:row[zi]||'',sector:detectSector(row[ni]||'',row[zi]||''),status:'nuevo',ultimoContacto:null,diasVisto:null,notas:'',createdAt:new Date().toISOString()});
+          added++;
+        });
+        save();loaded++;
+        if(loaded===files.length){updateAll();alert(`✓ ${added} contactos importados. Presiona "Sincronizar" para guardar en GitHub.`);}
+      }catch(err){alert('Error al leer CSV: '+err.message);}
+    };
+    reader.readAsText(file,'utf-8');
+  });
+  input.value='';
+}
+
+function filtered(){
+  const q=(document.getElementById('searchInput')?.value||'').toLowerCase();
+  let list=contacts.filter(c=>{
+    if(q&&!c.nombre.toLowerCase().includes(q)&&!c.tel.includes(q)&&!(c.zona||'').toLowerCase().includes(q))return false;
+    if(currentView==='nuevos')return c.status==='nuevo';
+    if(currentView==='visto')return c.status==='visto';
+    if(currentView==='frio')return c.status==='frio';
+    if(currentView==='respondio')return c.status==='respondio';
+    if(currentView==='hoy')return calcProximo(c).urgente;
+    if(currentView.startsWith('sec-'))return c.sector===currentView.replace('sec-','');
+    return true;
+  });
+  list.sort((a,b)=>{
+    if(sortField==='nombre')return sortDir*a.nombre.localeCompare(b.nombre);
+    if(sortField==='dias')return sortDir*((diasDesde(a.ultimoContacto)||999)-(diasDesde(b.ultimoContacto)||999));
+    if(sortField==='proximoContacto')return sortDir*(calcProximo(a).dias-calcProximo(b).dias);
+    return 0;
+  });
+  return list;
+}
+
+function statusColor(s){return{nuevo:'s-nuevo',contactado:'s-contactado',visto:'s-visto',respondio:'s-respondio',frio:'s-frio'}[s]||'s-nuevo';}
+function statusLabel(s){return{nuevo:'Nuevo',contactado:'Contactado',visto:'En visto',respondio:'Respondió',frio:'Frío'}[s]||s;}
+function sectorTag(s){return `<span class="tag tag-${s}">${s.charAt(0).toUpperCase()+s.slice(1)}</span>`;}
+
+function renderTable(){
+  const list=filtered();const tbody=document.getElementById('tableBody');
+  const table=document.getElementById('mainTable');const empty=document.getElementById('emptyState');
+  if(contacts.length===0){table.style.display='none';empty.style.display='flex';return;}
+  table.style.display='table';empty.style.display='none';
+  tbody.innerHTML=list.map(c=>{
+    const d=diasDesde(c.ultimoContacto);const prox=calcProximo(c);
+    const dc=d===null?'':d>7?'days-danger':d>3?'days-warn':'days-ok';
+    return`<tr onclick="openContact('${c.id}')">
+      <td><div class="contact-name">${c.nombre}</div><div class="contact-sub">${c.direccion||c.zona||'—'}</div></td>
+      <td>${sectorTag(c.sector)}</td>
+      <td style="font-family:'DM Mono',monospace;font-size:12px">${c.tel}</td>
+      <td style="font-size:12px;color:var(--text2)">${c.zona||'—'}</td>
+      <td><span class="status-dot ${statusColor(c.status)}"></span>${statusLabel(c.status)}</td>
+      <td class="days-badge ${dc}">${d===null?'Nunca':d===0?'Hoy':`Hace ${d}d`}</td>
+      <td style="font-size:12px;${prox.urgente?'color:var(--accent);font-weight:500':'color:var(--text2)'}">${prox.texto}</td>
+      <td class="days-badge ${c.status==='visto'&&c.diasVisto?'days-warn':''}">${c.status==='visto'&&c.diasVisto?c.diasVisto+'d':'—'}</td>
+      <td onclick="event.stopPropagation()" style="white-space:nowrap">
+        <button class="action-btn wa-btn" onclick="openWA('${c.tel}')">💬 WA</button>
+        <button class="action-btn ai-btn" onclick="openContact('${c.id}')">✦ IA</button>
+        <button class="action-btn del-btn" onclick="confirmDelete('${c.id}','${c.nombre.replace(/'/g,"\\'")}',event)">🗑</button>
+      </td></tr>`;
+  }).join('');
+}
+
+function updateCounts(){
+  const total=contacts.length;
+  const hoy=contacts.filter(c=>calcProximo(c).urgente).length;
+  const nuevos=contacts.filter(c=>c.status==='nuevo').length;
+  const visto=contacts.filter(c=>c.status==='visto').length;
+  const frio=contacts.filter(c=>c.status==='frio').length;
+  const respondio=contacts.filter(c=>c.status==='respondio').length;
+  document.getElementById('cnt-todos').textContent=total;
+  document.getElementById('cnt-hoy').textContent=hoy;
+  document.getElementById('cnt-nuevos').textContent=nuevos;
+  document.getElementById('cnt-visto').textContent=visto;
+  document.getElementById('cnt-frio').textContent=frio;
+  document.getElementById('cnt-respondio').textContent=respondio;
+  document.getElementById('cnt-condominio').textContent=contacts.filter(c=>c.sector==='condominio').length;
+  document.getElementById('cnt-edificio').textContent=contacts.filter(c=>c.sector==='edificio').length;
+  document.getElementById('cnt-fraccionamiento').textContent=contacts.filter(c=>c.sector==='fraccionamiento').length;
+  document.getElementById('totalCount').textContent=total;
+  const seguimientos=contacts.filter(c=>c.status!=='nuevo'&&c.ultimoContacto&&calcProximo(c).urgente).slice(0,10);
+  document.getElementById('followCount').textContent=seguimientos.length;
+  document.getElementById('dp-seguimientos-count').textContent=`${seguimientos.length}/10`;
+  document.getElementById('dp-seguimientos').innerHTML=seguimientos.length
+    ?seguimientos.map(c=>{const d=diasDesde(c.ultimoContacto);return`<div class="daily-mini"><span class="daily-mini-name">${c.nombre}</span><span style="font-size:11px;color:var(--warn);margin-right:6px">${d!==null?d+'d':''}</span><button class="action-btn wa-btn" onclick="openWA('${c.tel}')" style="font-size:11px;padding:3px 8px">WA</button></div>`;}).join('')
+    :'<div style="font-size:12px;color:var(--text3);padding:6px 0">Sin seguimientos aún — contacta nuevos prospectos primero</div>';
+}
+
+function updateAll(){updateCounts();renderTable();}
+function setView(v){currentView=v;document.querySelectorAll('.sidebar-item').forEach(el=>el.classList.remove('active'));const el=document.getElementById('view-'+v);if(el)el.classList.add('active');renderTable();}
+function toggleSort(f){if(sortField===f)sortDir*=-1;else{sortField=f;sortDir=1;}renderTable();}
+
+function openContact(id){
+  const c=contacts.find(x=>x.id==id);if(!c)return;
+  activeContact=c;
+  document.getElementById('m-name').textContent=c.nombre;
+  document.getElementById('m-sub').textContent=c.zona||c.direccion||'';
+  document.getElementById('m-tel').textContent=c.tel;
+  document.getElementById('m-zona').textContent=c.zona||'—';
+  const d=diasDesde(c.ultimoContacto);
+  document.getElementById('m-ultimo').textContent=c.ultimoContacto?`Hace ${d}d`:'Nunca';
+  document.getElementById('m-dias').textContent=d!==null?`${d} días`:'—';
+  const prox=calcProximo(c);
+  document.getElementById('m-next-text').textContent=prox.texto;
+  document.getElementById('m-next-sub').textContent=prox.razon;
+  ['nuevo','contactado','visto','respondio','frio'].forEach(s=>{const btn=document.getElementById('sb-'+s);btn.className='status-btn';if(c.status===s)btn.classList.add('active-'+s);});
+  document.getElementById('lastMsg').value='';
+  document.getElementById('aiResponse').style.display='none';
+  document.getElementById('overlay').classList.add('show');
+}
+function closeModal(e){if(e.target===document.getElementById('overlay'))closeModalDirect();}
+function closeModalDirect(){document.getElementById('overlay').classList.remove('show');activeContact=null;}
+
+function setStatus(s){
+  if(!activeContact)return;activeContact.status=s;
+  if(s==='visto')activeContact.diasVisto=0;
+  if(s==='contactado'||s==='respondio'){activeContact.ultimoContacto=new Date().toISOString();activeContact.diasVisto=null;}
+  ['nuevo','contactado','visto','respondio','frio'].forEach(st=>{const btn=document.getElementById('sb-'+st);btn.className='status-btn';if(activeContact.status===st)btn.classList.add('active-'+st);});
+  const prox=calcProximo(activeContact);
+  document.getElementById('m-next-text').textContent=prox.texto;
+  document.getElementById('m-next-sub').textContent=prox.razon;
+}
+
+function saveContact(){
+  if(!activeContact)return;
+  const idx=contacts.findIndex(c=>c.id===activeContact.id);
+  if(idx>=0)contacts[idx]=activeContact;
+  save();updateAll();closeModalDirect();
+}
+
+function confirmDelete(id,nombre,event){
+  if(event)event.stopPropagation();
+  if(!confirm(`¿Eliminar a ${nombre}?`))return;
+  contacts=contacts.filter(c=>c.id!=id);
+  save();updateAll();
+}
+
+function deleteContact(){
+  if(!activeContact)return;
+  if(!confirm(`¿Eliminar a ${activeContact.nombre}?`))return;
+  contacts=contacts.filter(c=>c.id!==activeContact.id);
+  save();updateAll();closeModalDirect();
+}
+
+function openWA(tel){const n=(tel||'').replace(/[^\d+]/g,'');const num=n.startsWith('+')?n:'+52'+n.replace(/^0/,'');window.open(`https://wa.me/${num}`,'_blank');}
+function openWhatsApp(){if(activeContact)openWA(activeContact.tel);}
+
+async function generateCopy(){
+  if(!activeContact)return;
+  const lastMsg=document.getElementById('lastMsg').value.trim();
+  const btn=document.getElementById('generateBtn');
+  btn.disabled=true;btn.innerHTML='<span class="spinner"></span> Generando...';
+  const ctx=`Eres el asistente de ventas de Arqos Systems (CCTV, cámaras, audio, pantallas, cableado en CDMX). Representas al Ing. César Flores. Clientes: Hilton CDMX, Cemex, 26+ restaurantes. 4.9★. Diagnóstico gratis sin compromiso.\n\nProspecto: ${activeContact.nombre}\nSector: ${activeContact.sector}\nZona: ${activeContact.zona||'CDMX'}\nEstado: ${activeContact.status}\nDías sin contacto: ${diasDesde(activeContact.ultimoContacto)??'primer contacto'}\n${lastMsg?`Último mensaje del cliente: "${lastMsg}"`:'No ha respondido aún.'}\n\nGenera UN mensaje WhatsApp corto (máx 4 líneas), natural, profesional. Si no ha respondido: seguimiento cálido. Si respondió: avanza hacia agendar visita. Termina con UNA pregunta. Firma como César de Arqos. Máx 2 emojis. SOLO el mensaje, sin explicaciones.`;
+  try{
+    const resp=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:1000,messages:[{role:'user',content:ctx}]})});
+    const data=await resp.json();
+    document.getElementById('aiText').textContent=data.content?.[0]?.text||'No se pudo generar.';
+    document.getElementById('aiResponse').style.display='block';
+  }catch(e){document.getElementById('aiText').textContent='Error al conectar con la IA.';document.getElementById('aiResponse').style.display='block';}
+  btn.disabled=false;btn.innerHTML='✦ Generar mensaje con IA';
+}
+
+function copyAI(){
+  navigator.clipboard.writeText(document.getElementById('aiText').textContent).then(()=>{const b=document.querySelector('.copy-response');b.textContent='✓ Copiado';setTimeout(()=>b.textContent='Copiar mensaje',1500);});
+}
+
+// Init
+const cached=localStorage.getItem('arqos_crm_cache');
+if(cached){try{contacts=JSON.parse(cached);}catch(e){contacts=[];}}
+loadFromGitHub();
+updateAll();
+</script>
+</body>
+</html>
