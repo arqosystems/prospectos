@@ -270,7 +270,8 @@
     "ultimoContacto": null,
     "diasVisto": null,
     "notas": "",
-    "createdAt": "2026-03-21T10:02:07.852Z"
+    "createdAt": "2026-03-21T10:02:07.852Z",
+    "waValidado": true
   },
   {
     "id": 1774087327852.301,
@@ -283,7 +284,8 @@
     "ultimoContacto": null,
     "diasVisto": null,
     "notas": "",
-    "createdAt": "2026-03-21T10:02:07.852Z"
+    "createdAt": "2026-03-21T10:02:07.852Z",
+    "waValidado": true
   },
   {
     "id": 1774087327852.0647,
@@ -296,7 +298,9 @@
     "ultimoContacto": null,
     "diasVisto": null,
     "notas": "",
-    "createdAt": "2026-03-21T10:02:07.852Z"
+    "createdAt": "2026-03-21T10:02:07.852Z",
+    "eliminado": true,
+    "eliminadoEn": "2026-03-21T11:32:34.475Z"
   },
   {
     "id": 1774087327852.133,
