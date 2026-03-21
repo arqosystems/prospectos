@@ -122,12 +122,7 @@
     </div>
     <table>
       <thead>
-        <tr>
-          <th>#</th>
-          <th>Nombre</th>
-          <th>Teléfono</th>
-          <th></th>
-        </tr>
+        <tr><th>#</th><th>Nombre</th><th>Teléfono</th><th></th></tr>
       </thead>
       <tbody id="resultsBody"></tbody>
     </table>
@@ -136,6 +131,9 @@
 
 <script>
 let leads = [];
+let map;
+
+function initMap() {}
 
 async function buscar() {
   const apiKey = document.getElementById('apiKey').value.trim();
@@ -146,60 +144,87 @@ async function buscar() {
   if (!apiKey) { setStatus('⚠️ Ingresa tu API Key para continuar.', true); return; }
 
   leads = [];
-  setStatus('Buscando prospectos...');
+  setStatus('Iniciando búsqueda...');
   document.getElementById('searchBtn').disabled = true;
   document.getElementById('resultsCard').style.display = 'none';
   document.getElementById('statsWrap').style.display = 'none';
   document.getElementById('progressWrap').style.display = 'block';
   setProgress(10);
 
+  // Load Google Maps JS API dynamically
+  if (!window.google) {
+    await new Promise((resolve, reject) => {
+      const script = document.createElement('script');
+      script.src = `https://maps.googleapis.com/maps/api/js?key=${apiKey}&libraries=places&callback=initMap`;
+      script.onerror = () => reject(new Error('No se pudo cargar la API. Verifica tu key.'));
+      document.head.appendChild(script);
+      window.initMap = resolve;
+    });
+  }
+
   try {
     const query = `${tipo} en ${zona}`;
-    const url = 'https://places.googleapis.com/v1/places:searchText';
-    let allPlaces = [];
-    let pageToken = null;
-    let page = 0;
-    const maxPages = Math.ceil(cantidad / 20);
+    setStatus(`Buscando "${query}"...`);
+    setProgress(20);
 
-    while (page < maxPages) {
-      setStatus(`Obteniendo resultados... (${allPlaces.length} encontrados)`);
-      setProgress(10 + (page / maxPages) * 70);
+    const service = new google.maps.places.PlacesService(document.createElement('div'));
 
-      const body = { textQuery: query, maxResultCount: 20, languageCode: 'es' };
-      if (pageToken) body.pageToken = pageToken;
+    const request = {
+      query: query,
+      fields: ['name', 'formatted_address', 'formatted_phone_number', 'place_id'],
+    };
 
-      const res = await fetch(url, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'X-Goog-Api-Key': apiKey,
-          'X-Goog-FieldMask': 'places.displayName,places.formattedAddress,places.nationalPhoneNumber,places.nextPageToken'
-        },
-        body: JSON.stringify(body)
+    const allResults = await new Promise((resolve, reject) => {
+      let results = [];
+      const search = (pageToken) => {
+        const req = pageToken ? { ...request, pageToken } : request;
+        service.textSearch(req, (res, status, pagination) => {
+          if (status !== google.maps.places.PlacesServiceStatus.OK && 
+              status !== google.maps.places.PlacesServiceStatus.ZERO_RESULTS) {
+            reject(new Error('Error: ' + status));
+            return;
+          }
+          if (res) results = results.concat(res);
+          setStatus(`Encontrados ${results.length} resultados...`);
+          setProgress(20 + Math.min(results.length / cantidad * 50, 50));
+
+          if (pagination && pagination.hasNextPage && results.length < cantidad) {
+            setTimeout(() => pagination.nextPage(), 2000);
+          } else {
+            resolve(results);
+          }
+        });
+      };
+      search(null);
+    });
+
+    setProgress(75);
+    setStatus('Obteniendo teléfonos...');
+
+    // Get phone details for each place
+    const detailedLeads = [];
+    for (let i = 0; i < Math.min(allResults.length, cantidad); i++) {
+      const place = allResults[i];
+      setProgress(75 + (i / Math.min(allResults.length, cantidad)) * 20);
+      
+      const details = await new Promise((resolve) => {
+        service.getDetails({
+          placeId: place.place_id,
+          fields: ['name', 'formatted_address', 'formatted_phone_number', 'international_phone_number']
+        }, (result, status) => {
+          resolve(status === 'OK' ? result : place);
+        });
       });
 
-      const data = await res.json();
-
-      if (!res.ok) {
-        const msg = data.error?.message || 'Error desconocido';
-        throw new Error(msg);
-      }
-
-      if (data.places) allPlaces = allPlaces.concat(data.places);
-      pageToken = data.nextPageToken;
-      page++;
-      if (!pageToken) break;
-      await new Promise(r => setTimeout(r, 2000));
+      detailedLeads.push({
+        num: i + 1,
+        nombre: details.name || place.name || 'Sin nombre',
+        telefono: details.formatted_phone_number || details.international_phone_number || '',
+        direccion: details.formatted_address || place.formatted_address || ''
+      });
     }
 
-    setProgress(95);
-    leads = allPlaces.slice(0, cantidad).map((p, i) => ({
-      num: i + 1,
-      nombre: p.displayName?.text || 'Sin nombre',
-      telefono: p.nationalPhoneNumber || '',
-      direccion: p.formattedAddress || ''
-    }));
-
+    leads = detailedLeads;
     setProgress(100);
     renderResults();
     setStatus('');
