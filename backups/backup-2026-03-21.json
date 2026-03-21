@@ -1162,7 +1162,9 @@
     "ultimoContacto": null,
     "diasVisto": null,
     "notas": "",
-    "createdAt": "2026-03-21T10:02:07.853Z"
+    "createdAt": "2026-03-21T10:02:07.853Z",
+    "eliminado": true,
+    "eliminadoEn": "2026-03-21T11:48:03.869Z"
   },
   {
     "id": 1774087327853.4326,
@@ -1175,7 +1177,9 @@
     "ultimoContacto": null,
     "diasVisto": null,
     "notas": "",
-    "createdAt": "2026-03-21T10:02:07.853Z"
+    "createdAt": "2026-03-21T10:02:07.853Z",
+    "eliminado": true,
+    "eliminadoEn": "2026-03-21T11:48:10.270Z"
   },
   {
     "id": 1774087327853.7024,
@@ -1188,7 +1192,9 @@
     "ultimoContacto": null,
     "diasVisto": null,
     "notas": "",
-    "createdAt": "2026-03-21T10:02:07.853Z"
+    "createdAt": "2026-03-21T10:02:07.853Z",
+    "eliminado": true,
+    "eliminadoEn": "2026-03-21T11:48:15.979Z"
   },
   {
     "id": 1774087327853.4087,
@@ -1201,7 +1207,9 @@
     "ultimoContacto": null,
     "diasVisto": null,
     "notas": "",
-    "createdAt": "2026-03-21T10:02:07.853Z"
+    "createdAt": "2026-03-21T10:02:07.853Z",
+    "eliminado": true,
+    "eliminadoEn": "2026-03-21T11:48:23.180Z"
   },
   {
     "id": 1774087327853.0186,
@@ -1214,7 +1222,9 @@
     "ultimoContacto": null,
     "diasVisto": null,
     "notas": "",
-    "createdAt": "2026-03-21T10:02:07.853Z"
+    "createdAt": "2026-03-21T10:02:07.853Z",
+    "eliminado": true,
+    "eliminadoEn": "2026-03-21T11:48:28.333Z"
   },
   {
     "id": 1774087327853.7185,
@@ -1227,7 +1237,9 @@
     "ultimoContacto": null,
     "diasVisto": null,
     "notas": "",
-    "createdAt": "2026-03-21T10:02:07.853Z"
+    "createdAt": "2026-03-21T10:02:07.853Z",
+    "eliminado": true,
+    "eliminadoEn": "2026-03-21T11:48:38.396Z"
   },
   {
     "id": 1774087327853.6125,
@@ -1240,7 +1252,8 @@
     "ultimoContacto": null,
     "diasVisto": null,
     "notas": "",
-    "createdAt": "2026-03-21T10:02:07.853Z"
+    "createdAt": "2026-03-21T10:02:07.853Z",
+    "waValidado": true
   },
   {
     "id": 1774087327853.894,
@@ -1253,7 +1266,9 @@
     "ultimoContacto": null,
     "diasVisto": null,
     "notas": "",
-    "createdAt": "2026-03-21T10:02:07.853Z"
+    "createdAt": "2026-03-21T10:02:07.853Z",
+    "eliminado": true,
+    "eliminadoEn": "2026-03-21T11:49:10.228Z"
   },
   {
     "id": 1774087327853.3816,
@@ -1266,7 +1281,8 @@
     "ultimoContacto": null,
     "diasVisto": null,
     "notas": "",
-    "createdAt": "2026-03-21T10:02:07.853Z"
+    "createdAt": "2026-03-21T10:02:07.853Z",
+    "waValidado": true
   },
   {
     "id": 1774087327853.0852,
@@ -1279,7 +1295,9 @@
     "ultimoContacto": null,
     "diasVisto": null,
     "notas": "",
-    "createdAt": "2026-03-21T10:02:07.853Z"
+    "createdAt": "2026-03-21T10:02:07.853Z",
+    "eliminado": true,
+    "eliminadoEn": "2026-03-21T11:49:28.378Z"
   },
   {
     "id": 1774087327853.4875,
@@ -1292,7 +1310,8 @@
     "ultimoContacto": null,
     "diasVisto": null,
     "notas": "",
-    "createdAt": "2026-03-21T10:02:07.853Z"
+    "createdAt": "2026-03-21T10:02:07.853Z",
+    "waValidado": true
   },
   {
     "id": 1774087327853.3118,
@@ -1305,7 +1324,8 @@
     "ultimoContacto": null,
     "diasVisto": null,
     "notas": "",
-    "createdAt": "2026-03-21T10:02:07.853Z"
+    "createdAt": "2026-03-21T10:02:07.853Z",
+    "waValidado": true
   },
   {
     "id": 1774087327853.374,
@@ -1318,7 +1338,8 @@
     "ultimoContacto": null,
     "diasVisto": null,
     "notas": "",
-    "createdAt": "2026-03-21T10:02:07.853Z"
+    "createdAt": "2026-03-21T10:02:07.853Z",
+    "waValidado": true
   },
   {
     "id": 1774087327853.9297,
@@ -1331,7 +1352,9 @@
     "ultimoContacto": null,
     "diasVisto": null,
     "notas": "",
-    "createdAt": "2026-03-21T10:02:07.853Z"
+    "createdAt": "2026-03-21T10:02:07.853Z",
+    "eliminado": true,
+    "eliminadoEn": "2026-03-21T11:49:56.924Z"
   },
   {
     "id": 1774087327853.1301,
