@@ -1117,7 +1117,8 @@
     "diasVisto": null,
     "notas": "",
     "createdAt": "2026-03-21T10:02:07.856Z",
-    "waValidado": true
+    "waValidado": true,
+    "citaGenerada": true
   },
   {
     "id": 1774087327856.5469,
@@ -1131,7 +1132,8 @@
     "diasVisto": null,
     "notas": "",
     "createdAt": "2026-03-21T10:02:07.856Z",
-    "waValidado": true
+    "waValidado": true,
+    "citaGenerada": true
   },
   {
     "id": 1774087327856.1511,
@@ -1173,7 +1175,8 @@
     "diasVisto": null,
     "notas": "",
     "createdAt": "2026-03-21T10:02:07.856Z",
-    "waValidado": true
+    "waValidado": true,
+    "citaGenerada": true
   },
   {
     "id": 1774087327856.4316,
@@ -4015,7 +4018,8 @@
     "diasVisto": null,
     "notas": "",
     "createdAt": "2026-03-21T13:35:08.714Z",
-    "waValidado": true
+    "waValidado": true,
+    "citaGenerada": true
   },
   {
     "id": 1774100108714.8196,
@@ -4029,7 +4033,8 @@
     "diasVisto": null,
     "notas": "",
     "createdAt": "2026-03-21T13:35:08.714Z",
-    "waValidado": true
+    "waValidado": true,
+    "citaGenerada": true
   },
   {
     "id": 1774100108714.1846,
@@ -4043,7 +4048,8 @@
     "diasVisto": null,
     "notas": "",
     "createdAt": "2026-03-21T13:35:08.714Z",
-    "waValidado": true
+    "waValidado": true,
+    "citaGenerada": true
   },
   {
     "id": 1774100108714.756,
@@ -4071,7 +4077,8 @@
     "diasVisto": null,
     "notas": "",
     "createdAt": "2026-03-21T13:35:08.715Z",
-    "waValidado": true
+    "waValidado": true,
+    "citaGenerada": true
   },
   {
     "id": 1774100108715.9634,
